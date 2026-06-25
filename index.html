@@ -78,6 +78,10 @@
       text-shadow: 0 0 24px rgba(255,255,255,.26);
     }
 
+    .desktop-title-word {
+      display: inline;
+    }
+
     .route-line {
       margin-top: 12px;
       color: #d8e9ff;
@@ -98,6 +102,10 @@
       padding: 18px 16px;
       min-height: calc(100vh - 36px);
       min-width: 0;
+    }
+
+    .section-heading {
+      display: none;
     }
 
     .timeline {
@@ -489,6 +497,11 @@
 
     .info-card.faded { opacity: .62; }
 
+    .info-card.faded .check {
+      opacity: 0;
+      transform: scale(.72);
+    }
+
     .card-icon {
       font-size: 2.65rem;
       color: #b9d9ff;
@@ -550,6 +563,7 @@
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto auto;
         padding: 14px;
+        gap: 14px;
       }
 
       header,
@@ -577,6 +591,52 @@
     }
 
     @media (max-width: 620px) {
+      header {
+        padding-top: 2px;
+      }
+
+      h1 {
+        font-size: clamp(2.15rem, 11vw, 2.9rem);
+        line-height: .92;
+        max-width: 330px;
+      }
+
+      .desktop-title-word {
+        display: none;
+      }
+
+      .route-line {
+        margin-top: 10px;
+        font-size: .96rem;
+        line-height: 1.5;
+        letter-spacing: .07em;
+      }
+
+      .timeline-shell {
+        border-radius: 18px;
+        padding: 14px 12px;
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 0 12px 36px;
+        color: #eaf4ff;
+        font-size: .78rem;
+        font-weight: 800;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+      }
+
+      .section-heading span:last-child {
+        color: var(--muted);
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: none;
+      }
+
       .leg {
         grid-template-columns: 38px 1fr;
         padding-right: 10px;
@@ -585,29 +645,34 @@
       .airline-icon { font-size: 1.65rem; }
       .route { font-size: .9rem; }
       .meta { font-size: .78rem; }
-      .bottom { grid-template-columns: 1fr; }
+      .bottom {
+        grid-template-columns: 1fr;
+        gap: 0;
+        padding-bottom: 0;
+      }
       .nav-btn { display: none; }
       .cards {
         grid-auto-flow: row;
         grid-auto-columns: unset;
         grid-template-columns: 1fr;
-        gap: 8px;
+        gap: 7px;
         overflow: visible;
-        padding: 2px 0 8px;
+        padding: 0;
       }
       .info-card {
-        min-height: 84px;
+        min-height: 72px;
         grid-template-columns: 1fr 28px;
         justify-items: start;
         align-items: center;
         text-align: left;
-        padding: 12px 14px;
+        padding: 10px 12px;
+        border-radius: 12px;
       }
       .info-card > div:first-child {
         display: grid;
-        grid-template-columns: 42px 1fr;
-        grid-template-rows: auto auto auto;
-        column-gap: 10px;
+        grid-template-columns: 36px 1fr;
+        grid-template-rows: auto auto;
+        column-gap: 9px;
         align-items: center;
         width: 100%;
       }
@@ -616,25 +681,36 @@
         grid-column: 2;
       }
       .card-icon {
-        grid-row: 1 / 4;
-        font-size: 2rem;
+        grid-row: 1 / 3;
+        font-size: 1.65rem;
       }
       .card-title {
         margin-top: 0;
-        font-size: .95rem;
+        font-size: .9rem;
+        line-height: 1.12;
       }
       .card-copy {
-        margin-top: 2px;
-        font-size: .78rem;
+        display: none;
       }
       .check {
         margin-top: 0;
-        width: 25px;
-        height: 25px;
+        width: 24px;
+        height: 24px;
       }
       .dots { display: none; }
-      .globe-stage { min-height: 360px; }
-      .earth { left: -36%; right: -34%; height: 540px; min-height: 420px; }
+      .globe-stage {
+        min-height: 330px;
+        border-radius: 15px;
+      }
+      .earth { left: -36%; right: -34%; height: 510px; min-height: 390px; }
+      .city-label {
+        font-size: .84rem;
+        line-height: 1.05;
+      }
+      .marker.active {
+        width: 28px;
+        height: 28px;
+      }
       .sky-plane::after { width: 140px; right: -118px; }
     }
   </style>
@@ -642,11 +718,15 @@
 <body>
   <main class="app">
     <aside class="timeline-shell" aria-label="Flight timeline">
+      <div class="section-heading">
+        <span>Flight Details</span>
+        <span>Tap to expand</span>
+      </div>
       <div class="timeline" id="timeline"></div>
     </aside>
 
     <header>
-      <h1>Travel Itinerary Overview</h1>
+      <h1>Travel Itinerary <span class="desktop-title-word">Overview</span></h1>
       <div class="route-line">TPE → AMS → BCN → AMS → YYZ → AMS → TPE</div>
     </header>
 
