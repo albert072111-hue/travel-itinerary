@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Travel Itinerary Overview</title>
+  <style>
+    :root {
+      --bg: #020816;
+      --panel: rgba(8, 22, 40, .62);
+      --panel-strong: rgba(12, 31, 54, .82);
+      --line: rgba(188, 219, 255, .22);
+      --text: #f4f8ff;
+      --muted: #b4c6dd;
+      --blue: #49a1ff;
+      --cyan: #42d6ff;
+      --pink: #ff4da0;
+      --green: #57df7d;
+      --amber: #ffd166;
+      --shadow-blue: 0 0 28px rgba(54, 146, 255, .72);
+      --shadow-pink: 0 0 28px rgba(255, 64, 151, .78);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 80% 6%, rgba(63, 151, 255, .32), transparent 28%),
+        radial-gradient(circle at 12% 18%, rgba(255, 68, 163, .16), transparent 22%),
+        linear-gradient(180deg, #030814 0%, #061020 58%, #02050d 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,.7) 0 1px, transparent 1.7px),
+        radial-gradient(circle, rgba(100,178,255,.5) 0 1px, transparent 1.8px);
+      background-size: 110px 90px, 180px 140px;
+      background-position: 16px 10px, 60px 32px;
+      opacity: .22;
+    }
+
+    .app {
+      position: relative;
+      display: grid;
+      grid-template-columns: clamp(360px, 28vw, 460px) minmax(0, 1fr);
+      grid-template-rows: auto 1fr auto;
+      gap: 18px;
+      width: 100%;
+      max-width: 100vw;
+      min-height: 100vh;
+      padding: 18px 22px;
+      overflow: hidden;
+    }
+
+    header {
+      grid-column: 2;
+      z-index: 2;
+      padding: 8px 10px 0;
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif;
+      font-size: clamp(2.4rem, 5.2vw, 5.5rem);
+      line-height: .95;
+      font-weight: 500;
+      letter-spacing: 0;
+      text-shadow: 0 0 24px rgba(255,255,255,.26);
+    }
+
+    .route-line {
+      margin-top: 12px;
+      color: #d8e9ff;
+      font-size: clamp(1rem, 2vw, 1.95rem);
+      letter-spacing: .08em;
+      text-shadow: 0 0 16px rgba(73,161,255,.68);
+    }
+
+    .timeline-shell {
+      grid-row: 1 / 4;
+      position: relative;
+      z-index: 3;
+      border: 1px solid rgba(202, 226, 255, .35);
+      border-radius: 24px;
+      background: linear-gradient(145deg, rgba(13, 31, 54, .84), rgba(2, 15, 29, .58));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 24px 80px rgba(0,0,0,.42);
+      backdrop-filter: blur(18px);
+      padding: 18px 16px;
+      min-height: calc(100vh - 36px);
+      min-width: 0;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 9px;
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 26px;
+      bottom: 34px;
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(var(--pink), var(--blue) 30%, var(--blue) 74%, var(--pink));
+      box-shadow: 0 0 24px rgba(73,161,255,.78);
+    }
+
+    .leg {
+      position: relative;
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+      color: inherit;
+      border: 1px solid rgba(184, 215, 255, .18);
+      border-radius: 14px;
+      background: rgba(3, 18, 35, .54);
+      padding: 13px 14px 13px 22px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease, opacity .25s ease;
+      min-height: 82px;
+    }
+
+    .leg:hover,
+    .leg:focus-visible {
+      outline: none;
+      transform: translateX(3px);
+      border-color: rgba(107, 180, 255, .7);
+      box-shadow: 0 0 0 1px rgba(73,161,255,.18), var(--shadow-blue);
+    }
+
+    .leg.segment-0 { --seg-color: 255, 77, 160; --seg-bg-a: 43, 18, 50; --seg-bg-b: 7, 28, 50; }
+    .leg.segment-1 { --seg-color: 66, 214, 255; --seg-bg-a: 6, 38, 58; --seg-bg-b: 5, 24, 45; }
+    .leg.segment-2 { --seg-color: 255, 209, 102; --seg-bg-a: 48, 39, 13; --seg-bg-b: 7, 32, 41; }
+
+    .leg.segment-selected {
+      border-color: rgba(var(--seg-color), .74);
+      background: linear-gradient(135deg, rgba(var(--seg-bg-a), .84), rgba(var(--seg-bg-b), .74));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 0 28px rgba(var(--seg-color), .58);
+      opacity: 1;
+    }
+
+    .leg.expanded {
+      min-height: 186px;
+      align-items: start;
+    }
+
+    .leg.dimmed { opacity: .72; }
+
+    .orb {
+      position: absolute;
+      left: -25px;
+      top: 16px;
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      color: white;
+      font-weight: 800;
+      border: 2px solid currentColor;
+      background: rgba(5, 19, 37, .9);
+      box-shadow: 0 0 18px currentColor, inset 0 0 12px currentColor;
+    }
+
+    .leg.expanded .orb {
+      width: 48px;
+      height: 48px;
+      left: -28px;
+    }
+
+    .airline-icon {
+      display: grid;
+      place-items: center;
+      font-size: 2.15rem;
+      color: var(--blue);
+      filter: drop-shadow(0 0 10px currentColor);
+    }
+
+    .leg.pink .orb,
+    .leg.pink .airline-icon,
+    .leg.pink .date,
+    .leg.pink .plus-day { color: var(--pink); }
+
+    .leg.segment-selected .orb,
+    .leg.segment-selected .airline-icon,
+    .leg.segment-selected .date,
+    .leg.segment-selected .plus-day {
+      color: rgb(var(--seg-color));
+    }
+
+    .date {
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .route {
+      margin-top: 4px;
+      font-weight: 720;
+      font-size: .98rem;
+      color: white;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .86rem;
+      align-items: center;
+    }
+
+    .airline {
+      font-weight: 800;
+      color: white;
+    }
+
+    .klm { color: #35c8ff; }
+    .ci { color: #ffe0ef; }
+
+    .details {
+      display: none;
+      grid-column: 1 / -1;
+      margin-top: 12px;
+      color: #d8e8fb;
+      line-height: 1.45;
+      font-size: .87rem;
+    }
+
+    .leg.expanded .details {
+      display: grid;
+      gap: 8px;
+    }
+
+    .detail-row {
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(210, 232, 255, .14);
+      background: rgba(255,255,255,.045);
+    }
+
+    .collapse {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      color: rgba(255,255,255,.78);
+      font-size: .9rem;
+    }
+
+    .globe-stage {
+      grid-column: 2;
+      grid-row: 2;
+      position: relative;
+      min-width: 0;
+      min-height: 560px;
+      overflow: hidden;
+      border-radius: 18px;
+    }
+
+    .earth {
+      position: absolute;
+      left: 2%;
+      right: 0;
+      bottom: -26%;
+      height: min(72vw, 760px);
+      min-height: 520px;
+      border-radius: 50% 50% 0 0 / 58% 58% 0 0;
+      background:
+        radial-gradient(circle at 52% 0%, rgba(255,255,255,.42), transparent 3%),
+        radial-gradient(circle at 56% 30%, rgba(255,255,255,.08), transparent 6%),
+        radial-gradient(ellipse at 52% 18%, rgba(144, 199, 255, .58), transparent 16%),
+        radial-gradient(ellipse at 50% 18%, rgba(18, 77, 135, .82), transparent 42%),
+        linear-gradient(135deg, transparent 0 28%, rgba(141, 110, 78, .24) 29% 34%, transparent 35% 45%, rgba(117, 103, 73, .22) 46% 52%, transparent 53%),
+        linear-gradient(40deg, transparent 0 19%, rgba(76, 91, 78, .35) 20% 26%, transparent 27% 48%, rgba(82, 72, 52, .32) 49% 56%, transparent 57%),
+        radial-gradient(ellipse at 50% 38%, #0d3157 0%, #061a31 48%, #021020 72%);
+      box-shadow:
+        inset 0 24px 38px rgba(222, 242, 255, .24),
+        inset 0 -90px 120px rgba(0,0,0,.72),
+        0 -8px 34px rgba(92, 177, 255, .68);
+      filter: saturate(1.2);
+    }
+
+    .earth::after {
+      content: "";
+      position: absolute;
+      inset: 4% 7% 0;
+      opacity: .38;
+      background-image:
+        radial-gradient(circle, rgba(255,220,153,.95) 0 1.3px, transparent 1.8px),
+        radial-gradient(circle, rgba(164,213,255,.8) 0 1px, transparent 1.7px);
+      background-size: 42px 30px, 68px 46px;
+      mask-image: radial-gradient(ellipse at center, black 0 58%, transparent 73%);
+    }
+
+    .routes-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .flight-path {
+      fill: none;
+      stroke-width: 3.4;
+      stroke-linecap: round;
+      opacity: .46;
+      filter: drop-shadow(0 0 8px currentColor);
+      transition: opacity .25s ease, stroke-width .25s ease;
+    }
+
+    .flight-path.active {
+      opacity: 1;
+      stroke-width: 5;
+      stroke-dasharray: 10 12;
+      animation: dash 1.2s linear infinite;
+    }
+
+    @keyframes dash { to { stroke-dashoffset: -44; } }
+
+    .marker {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 3px solid white;
+      background: var(--blue);
+      box-shadow: 0 0 18px var(--blue), 0 0 34px var(--blue);
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+
+    .marker.active {
+      width: 31px;
+      height: 31px;
+      background: var(--pink);
+      box-shadow: 0 0 24px var(--pink), 0 0 46px var(--pink);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      50% { transform: translate(-50%, -50%) scale(1.16); }
+    }
+
+    .city-label {
+      position: absolute;
+      z-index: 3;
+      transform: translate(-50%, 16px);
+      font-weight: 800;
+      line-height: 1.08;
+      text-align: center;
+      text-shadow: 0 2px 12px #000, 0 0 12px rgba(255,255,255,.35);
+      pointer-events: none;
+    }
+
+    .plane-mover {
+      position: absolute;
+      z-index: 4;
+      left: 0;
+      top: 0;
+      font-size: 2rem;
+      color: white;
+      filter: drop-shadow(0 0 14px var(--blue));
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    .sky-plane {
+      position: absolute;
+      right: 5%;
+      top: 4%;
+      font-size: clamp(2.3rem, 5vw, 4.4rem);
+      color: white;
+      transform: rotate(-16deg);
+      filter: drop-shadow(0 0 20px var(--blue));
+    }
+
+    .sky-plane::after {
+      content: "";
+      position: absolute;
+      right: -210px;
+      top: 38%;
+      width: 250px;
+      height: 70px;
+      border-top: 4px solid rgba(73,161,255,.85);
+      border-radius: 50%;
+      box-shadow: 0 -12px 24px rgba(73,161,255,.45);
+    }
+
+    .bottom {
+      grid-column: 2;
+      grid-row: 3;
+      z-index: 4;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding-bottom: 8px;
+      min-width: 0;
+    }
+
+    .nav-btn {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid rgba(191, 222, 255, .36);
+      color: white;
+      background: rgba(8, 24, 43, .48);
+      box-shadow: 0 0 18px rgba(73,161,255,.28);
+      cursor: pointer;
+      font-size: 2rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(128px, 1fr);
+      gap: 12px;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .info-card {
+      min-height: 154px;
+      border: 1px solid rgba(206, 229, 255, .38);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(15, 34, 57, .76), rgba(2, 15, 29, .62));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.13), 0 14px 38px rgba(0,0,0,.26);
+      backdrop-filter: blur(16px);
+      padding: 16px 14px;
+      display: grid;
+      align-content: space-between;
+      justify-items: center;
+      text-align: center;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .25s ease;
+      cursor: pointer;
+    }
+
+    .info-card.related,
+    .info-card.active-segment {
+      border-color: rgba(94, 226, 128, .7);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 26px rgba(72, 220, 116, .42);
+      transform: translateY(-5px);
+    }
+
+    .info-card.segment-card-0.active-segment {
+      border-color: rgba(255, 77, 160, .72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 26px rgba(255, 77, 160, .42);
+    }
+
+    .info-card.segment-card-1.active-segment {
+      border-color: rgba(66, 214, 255, .72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 26px rgba(66, 214, 255, .42);
+    }
+
+    .info-card.segment-card-2.active-segment {
+      border-color: rgba(255, 209, 102, .72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 26px rgba(255, 209, 102, .36);
+    }
+
+    .info-card:hover,
+    .info-card:focus-visible {
+      outline: none;
+      border-color: rgba(111, 190, 255, .7);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 24px rgba(73,161,255,.46);
+    }
+
+    .info-card.faded { opacity: .62; }
+
+    .card-icon {
+      font-size: 2.65rem;
+      color: #b9d9ff;
+      filter: drop-shadow(0 0 12px var(--blue));
+    }
+
+    .card-title {
+      margin-top: 5px;
+      font-weight: 760;
+      font-size: .98rem;
+    }
+
+    .card-copy {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.35;
+    }
+
+    .check {
+      display: grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      margin-top: 10px;
+      border-radius: 50%;
+      color: white;
+      background: rgba(58, 187, 90, .82);
+      box-shadow: 0 0 12px rgba(82, 229, 118, .72);
+      font-weight: 900;
+    }
+
+    .dots {
+      grid-column: 2;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: rgba(190, 210, 235, .52);
+    }
+
+    .dot.active {
+      background: var(--blue);
+      box-shadow: 0 0 14px var(--blue);
+    }
+
+    .mobile-active {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+        padding: 14px;
+      }
+
+      header,
+      .globe-stage,
+      .bottom {
+        grid-column: 1;
+        grid-row: auto;
+      }
+
+      .timeline-shell {
+        grid-column: 1;
+        grid-row: auto;
+        min-height: 0;
+        order: 2;
+        width: 100%;
+      }
+
+      header { order: 1; padding-left: 2px; }
+      .bottom { order: 2; }
+      .globe-stage { order: 3; width: 100%; min-height: 420px; }
+      .timeline-shell { order: 4; }
+      .cards { grid-auto-columns: minmax(190px, 48%); overflow-x: auto; padding: 8px 2px 16px; scroll-snap-type: x mandatory; }
+      .info-card { scroll-snap-align: center; }
+      .timeline { padding-left: 20px; }
+    }
+
+    @media (max-width: 620px) {
+      .leg {
+        grid-template-columns: 38px 1fr;
+        padding-right: 10px;
+      }
+
+      .airline-icon { font-size: 1.65rem; }
+      .route { font-size: .9rem; }
+      .meta { font-size: .78rem; }
+      .bottom { grid-template-columns: 1fr; }
+      .nav-btn { display: none; }
+      .cards {
+        grid-auto-flow: row;
+        grid-auto-columns: unset;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        overflow: visible;
+        padding: 2px 0 8px;
+      }
+      .info-card {
+        min-height: 84px;
+        grid-template-columns: 1fr 28px;
+        justify-items: start;
+        align-items: center;
+        text-align: left;
+        padding: 12px 14px;
+      }
+      .info-card > div:first-child {
+        display: grid;
+        grid-template-columns: 42px 1fr;
+        grid-template-rows: auto auto auto;
+        column-gap: 10px;
+        align-items: center;
+        width: 100%;
+      }
+      .info-card .card-title,
+      .info-card .card-copy {
+        grid-column: 2;
+      }
+      .card-icon {
+        grid-row: 1 / 4;
+        font-size: 2rem;
+      }
+      .card-title {
+        margin-top: 0;
+        font-size: .95rem;
+      }
+      .card-copy {
+        margin-top: 2px;
+        font-size: .78rem;
+      }
+      .check {
+        margin-top: 0;
+        width: 25px;
+        height: 25px;
+      }
+      .dots { display: none; }
+      .globe-stage { min-height: 360px; }
+      .earth { left: -36%; right: -34%; height: 540px; min-height: 420px; }
+      .sky-plane::after { width: 140px; right: -118px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="timeline-shell" aria-label="Flight timeline">
+      <div class="timeline" id="timeline"></div>
+    </aside>
+
+    <header>
+      <h1>Travel Itinerary Overview</h1>
+      <div class="route-line">TPE → AMS → BCN → AMS → YYZ → AMS → TPE</div>
+    </header>
+
+    <section class="globe-stage" aria-label="Interactive route map">
+      <div class="earth"></div>
+      <svg class="routes-svg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="pinkBlue" x1="0" x2="1">
+            <stop offset="0" stop-color="#ff4da0" />
+            <stop offset="1" stop-color="#49a1ff" />
+          </linearGradient>
+          <linearGradient id="blueArc" x1="0" x2="1">
+            <stop offset="0" stop-color="#49a1ff" />
+            <stop offset="1" stop-color="#42d6ff" />
+          </linearGradient>
+        </defs>
+        <path id="path-0" class="flight-path" stroke="url(#pinkBlue)" d="M 884 316 C 780 158, 590 152, 494 212" />
+        <path id="path-1" class="flight-path" stroke="url(#blueArc)" d="M 494 212 C 474 256, 454 282, 448 335" />
+        <path id="path-2" class="flight-path" stroke="url(#blueArc)" d="M 448 335 C 460 278, 474 246, 494 212" />
+        <path id="path-3" class="flight-path" stroke="url(#blueArc)" d="M 494 212 C 358 156, 216 185, 134 302" />
+        <path id="path-4" class="flight-path" stroke="url(#blueArc)" d="M 134 302 C 252 184, 398 164, 494 212" />
+        <path id="path-5" class="flight-path" stroke="url(#pinkBlue)" d="M 494 212 C 638 140, 794 174, 884 316" />
+      </svg>
+      <div class="plane-mover" id="planeMover">✈</div>
+      <div class="sky-plane">✈</div>
+      <div id="markers"></div>
+    </section>
+
+    <section class="bottom" aria-label="Trip insight cards">
+      <button class="nav-btn" id="prev" type="button" aria-label="Previous leg">‹</button>
+      <div>
+        <div class="cards" id="cards"></div>
+        <div class="dots" id="dots"></div>
+      </div>
+      <button class="nav-btn" id="next" type="button" aria-label="Next leg">›</button>
+    </section>
+  </main>
+
+  <script>
+    const legs = [
+      {
+        date: "Jan 31",
+        from: "Taipei (TPE)",
+        to: "Amsterdam (AMS)",
+        airline: "CHINA AIRLINES",
+        airlineClass: "ci",
+        flight: "CI73",
+        dep: "23:05",
+        arr: "07:50",
+        plus: "+1 day",
+        tone: "pink",
+        details: [
+          ["Role", "Long-haul sector into Amsterdam for the business outbound trip."],
+          ["Connection", "Arrive 07:50 (+1 day), then connect onward to AMS → BCN."],
+          ["Airport action", "Follow signs for D Gates and proceed through EU immigration."],
+          ["Timing note", "Short connection window. Keep passport, boarding pass, and essentials ready."]
+        ],
+        segment: 0
+      },
+      { date: "Feb 1", from: "Amsterdam (AMS)", to: "Barcelona (BCN)", airline: "KLM", airlineClass: "klm", flight: "KL1513", dep: "10:05", arr: "12:15", tone: "blue", details: [["Role", "Final sector of the business outbound trip."], ["Connection", "Depart AMS 10:05 after the Taipei arrival connection."], ["Arrival note", "Arrive Barcelona 12:15, suitable for a midday start in the city."]], segment: 0 },
+      { date: "Feb 5", from: "Barcelona (BCN)", to: "Amsterdam (AMS)", airline: "KLM", airlineClass: "klm", flight: "KL1510", dep: "06:00", arr: "08:20", tone: "blue", details: [["Role", "First sector of the personal outbound trip."], ["Timing note", "Early morning departure from Barcelona."], ["Connection", "Arrive AMS 08:20, then connect onward to AMS → YYZ."]], segment: 1 },
+      { date: "Feb 5", from: "Amsterdam (AMS)", to: "Toronto (YYZ)", airline: "KLM", airlineClass: "klm", flight: "KL691", dep: "13:30", arr: "15:40", tone: "blue", details: [["Role", "Long-haul sector for the private trip to Toronto."], ["Connection", "AMS remains the transit hub between Barcelona and Toronto."], ["Arrival note", "Arrive Toronto 15:40 on the same day."]], segment: 1 },
+      { date: "Feb 12", from: "Toronto (YYZ)", to: "Amsterdam (AMS)", airline: "KLM", airlineClass: "klm", flight: "KL692", dep: "17:55", arr: "07:05", plus: "+1 day", tone: "blue", details: [["Role", "Overnight return sector from Toronto back to Amsterdam."], ["Timing note", "Arrive AMS 07:05 (+1 day), then connect onward to Taipei."], ["Connection", "Use the morning arrival window to reset and prepare for the final long-haul flight."]], segment: 2 },
+      { date: "Feb 13", from: "Amsterdam (AMS)", to: "Taipei (TPE)", airline: "CHINA AIRLINES", airlineClass: "ci", flight: "CI74", dep: "10:40", arr: "06:35", plus: "+1 day", tone: "pink", details: [["Role", "Final sector of the private trip return."], ["Connection", "Depart AMS 10:40 after arriving from Toronto."], ["Arrival note", "Arrive Taipei 06:35 (+1 day)."]], segment: 2 }
+    ];
+
+    const cities = {
+      TPE: { name: "Taipei", code: "TPE", x: 88.4, y: 51 },
+      AMS: { name: "Amsterdam", code: "AMS", x: 49.4, y: 34.2 },
+      BCN: { name: "Barcelona", code: "BCN", x: 44.8, y: 53.8 },
+      YYZ: { name: "Toronto", code: "YYZ", x: 13.4, y: 48.7 }
+    };
+
+    const tripSegments = [
+      { icon: "💼", title: "Business Outbound", route: "TPE-AMS-BCN", copy: "Taipei to Barcelona via Amsterdam for the business trip.", legs: [0, 1] },
+      { icon: "📍", title: "Personal Outbound", route: "BCN-AMS-YYZ", copy: "Barcelona to Toronto via Amsterdam for the family visit.", legs: [2, 3] },
+      { icon: "↩", title: "Personal Return", route: "YYZ-AMS-TPE", copy: "Toronto to Taipei via Amsterdam for the return trip.", legs: [4, 5] }
+    ];
+
+    let active = 0;
+    let expandedLegs = new Set([0, 1]);
+    let animationStart = performance.now();
+    let activePathEls = [];
+    let activePathLengths = [];
+    let activeTotalPathLength = 0;
+    const timeline = document.querySelector("#timeline");
+    const markerLayer = document.querySelector("#markers");
+    const cardLayer = document.querySelector("#cards");
+    const dots = document.querySelector("#dots");
+    const plane = document.querySelector("#planeMover");
+    const routeSvg = document.querySelector(".routes-svg");
+
+    function airportCode(label) {
+      return label.match(/\(([^)]+)\)/)[1];
+    }
+
+    function renderTimeline() {
+      const selectedSegment = legs[active].segment;
+      timeline.innerHTML = legs.map((leg, index) => `
+        <button class="leg segment-${leg.segment} ${leg.tone === "pink" ? "pink" : ""} ${leg.segment === selectedSegment ? "segment-selected" : "dimmed"} ${expandedLegs.has(index) ? "expanded" : ""} ${index === active ? "active" : ""}" type="button" data-index="${index}" aria-expanded="${expandedLegs.has(index)}">
+          <span class="orb">${index + 1}</span>
+          <span class="airline-icon">✈</span>
+          <span>
+            <span class="date">${leg.date}</span>
+            <span class="route">${leg.from} → ${leg.to}</span>
+            <span class="meta">
+              <span class="airline ${leg.airlineClass}">${leg.airline}</span>
+              <span>${leg.flight}</span>
+              <span>◷ Dep ${leg.dep}</span>
+              <span>|</span>
+              <span>Arr ${leg.arr}</span>
+              ${leg.plus ? `<span class="plus-day">(${leg.plus})</span>` : ""}
+            </span>
+          </span>
+          <span class="details">
+            ${leg.details.map(([label, value]) => `<span class="detail-row"><strong>${label}:</strong> ${value}</span>`).join("")}
+          </span>
+        </button>
+      `).join("");
+      timeline.querySelectorAll(".leg").forEach(button => {
+        button.addEventListener("click", () => toggleLeg(Number(button.dataset.index)));
+      });
+    }
+
+    function renderMarkers() {
+      const segmentCities = new Set();
+      tripSegments[legs[active].segment].legs.forEach(index => {
+        segmentCities.add(airportCode(legs[index].from));
+        segmentCities.add(airportCode(legs[index].to));
+      });
+      markerLayer.innerHTML = Object.values(cities).map(city => {
+        const onRoute = segmentCities.has(city.code);
+        return `
+          <span class="marker ${onRoute ? "active" : ""}" style="left:${city.x}%; top:${city.y}%"></span>
+          <span class="city-label" style="left:${city.x}%; top:${city.y}%">${city.name}<br>(${city.code})</span>
+        `;
+      }).join("");
+    }
+
+    function renderCards() {
+      const activeSegment = legs[active].segment;
+      cardLayer.innerHTML = tripSegments.map((card, index) => `
+        <article class="info-card segment-card-${index} ${index === activeSegment ? "active-segment" : "faded"}" tabindex="0" role="button" data-segment="${index}" aria-pressed="${index === activeSegment}">
+          <div>
+            <div class="card-icon">${card.icon}</div>
+            <div class="card-title">${card.title}</div>
+            <div class="card-title">${card.route}</div>
+            <div class="card-copy">${card.copy}</div>
+          </div>
+          <div class="check">✓</div>
+        </article>
+      `).join("");
+      cardLayer.querySelectorAll(".info-card").forEach(card => {
+        card.addEventListener("click", () => setSegment(Number(card.dataset.segment)));
+        card.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            setSegment(Number(card.dataset.segment));
+          }
+        });
+      });
+      dots.innerHTML = tripSegments.map((_, index) => `<span class="dot ${index === activeSegment ? "active" : ""}"></span>`).join("");
+      const card = cardLayer.children[activeSegment];
+      if (card) card.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    }
+
+    function renderRoutes() {
+      const segment = tripSegments[legs[active].segment];
+      const segmentLegs = new Set(segment.legs);
+      document.querySelectorAll(".flight-path").forEach((path, index) => {
+        path.classList.toggle("active", segmentLegs.has(index));
+      });
+      activePathEls = segment.legs.map(index => document.querySelector(`#path-${index}`));
+      activePathLengths = activePathEls.map(path => path.getTotalLength());
+      activeTotalPathLength = activePathLengths.reduce((sum, length) => sum + length, 0);
+      animationStart = performance.now();
+      plane.style.color = legs[active].tone === "pink" ? "var(--pink)" : "white";
+      plane.style.filter = legs[active].tone === "pink" ? "drop-shadow(0 0 16px var(--pink))" : "drop-shadow(0 0 16px var(--blue))";
+      positionPlane(animationStart);
+    }
+
+    function positionPlane(now) {
+      if (!activePathEls.length || !activeTotalPathLength) return;
+      const duration = 8600;
+      const progress = ((now - animationStart) % duration) / duration;
+      let remainingDistance = activeTotalPathLength * progress;
+      let path = activePathEls[0];
+      let pathLength = activePathLengths[0];
+      for (let i = 0; i < activePathEls.length; i++) {
+        path = activePathEls[i];
+        pathLength = activePathLengths[i];
+        if (remainingDistance <= pathLength || i === activePathEls.length - 1) break;
+        remainingDistance -= pathLength;
+      }
+      const localDistance = Math.min(pathLength, Math.max(0, remainingDistance));
+      const point = path.getPointAtLength(localDistance);
+      const next = path.getPointAtLength(Math.min(pathLength, localDistance + 2));
+      const svgRect = routeSvg.getBoundingClientRect();
+      const stageRect = routeSvg.parentElement.getBoundingClientRect();
+      const x = (point.x / 1000) * svgRect.width + svgRect.left - stageRect.left;
+      const y = (point.y / 620) * svgRect.height + svgRect.top - stageRect.top;
+      const dx = next.x - point.x;
+      const dy = next.y - point.y;
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      plane.style.transform = `translate(${x - 16}px, ${y - 16}px) rotate(${angle}deg)`;
+    }
+
+    function animatePlane(now) {
+      positionPlane(now);
+      requestAnimationFrame(animatePlane);
+    }
+
+    function setActive(index) {
+      active = (index + legs.length) % legs.length;
+      renderTimeline();
+      renderMarkers();
+      renderCards();
+      renderRoutes();
+    }
+
+    function toggleLeg(index) {
+      const nextSegment = legs[index].segment;
+      if (nextSegment !== legs[active].segment) {
+        active = index;
+        expandedLegs = new Set([index]);
+      } else if (expandedLegs.has(index)) {
+        expandedLegs.delete(index);
+      } else {
+        expandedLegs.add(index);
+      }
+      renderTimeline();
+      renderMarkers();
+      renderCards();
+      renderRoutes();
+    }
+
+    function setSegment(segmentIndex) {
+      const segment = tripSegments[(segmentIndex + tripSegments.length) % tripSegments.length];
+      active = segment.legs[0];
+      expandedLegs = new Set(segment.legs);
+      renderTimeline();
+      renderMarkers();
+      renderCards();
+      renderRoutes();
+    }
+
+    document.querySelector("#prev").addEventListener("click", () => setSegment(legs[active].segment - 1));
+    document.querySelector("#next").addEventListener("click", () => setSegment(legs[active].segment + 1));
+    window.addEventListener("keydown", event => {
+      if (event.key === "ArrowLeft") setSegment(legs[active].segment - 1);
+      if (event.key === "ArrowRight") setSegment(legs[active].segment + 1);
+    });
+
+    setActive(0);
+    requestAnimationFrame(animatePlane);
+  </script>
+</body>
+</html>
