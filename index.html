@@ -321,6 +321,9 @@
       grid-column: 2;
       grid-row: 2;
       position: relative;
+      --map-scale: 1.18;
+      --map-x: -8%;
+      --map-y: -8%;
       min-width: 0;
       min-height: 560px;
       overflow: hidden;
@@ -370,6 +373,8 @@
       z-index: 1;
       opacity: .42;
       filter: drop-shadow(0 0 9px rgba(102, 188, 255, .22));
+      transform: translate(var(--map-x), var(--map-y)) scale(var(--map-scale));
+      transform-origin: center center;
       pointer-events: none;
     }
 
@@ -386,6 +391,8 @@
       height: 100%;
       overflow: visible;
       z-index: 2;
+      transform: translate(var(--map-x), var(--map-y)) scale(var(--map-scale));
+      transform-origin: center center;
     }
 
     .flight-path {
@@ -799,6 +806,9 @@
       }
       .dots { display: none; }
       .globe-stage {
+        --map-scale: 1.34;
+        --map-x: -14%;
+        --map-y: -7%;
         min-height: 330px;
         border-radius: 15px;
       }
@@ -1091,11 +1101,23 @@
     const dots = document.querySelector("#dots");
     const plane = document.querySelector("#planeMover");
     const routeSvg = document.querySelector(".routes-svg");
+    const globeStage = document.querySelector(".globe-stage");
     const statusPanel = document.querySelector("#statusPanel");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     function airportCode(label) {
       return label.match(/\(([^)]+)\)/)[1];
+    }
+
+    function mapPointToStage(xPercent, yPercent) {
+      const styles = getComputedStyle(globeStage);
+      const scale = parseFloat(styles.getPropertyValue("--map-scale")) || 1;
+      const offsetX = parseFloat(styles.getPropertyValue("--map-x")) || 0;
+      const offsetY = parseFloat(styles.getPropertyValue("--map-y")) || 0;
+      return {
+        x: offsetX + 50 + (xPercent - 50) * scale,
+        y: offsetY + 50 + (yPercent - 50) * scale
+      };
     }
 
     function renderTimeline() {
@@ -1134,9 +1156,10 @@
       });
       markerLayer.innerHTML = Object.values(cities).map(city => {
         const onRoute = segmentCities.has(city.code);
+        const point = mapPointToStage(city.x, city.y);
         return `
-          <span class="marker ${onRoute ? "active" : ""}" style="left:${city.x}%; top:${city.y}%"></span>
-          <span class="city-label" style="left:${city.x}%; top:${city.y}%; transform: translate(calc(-50% + ${city.labelX || 0}px), ${city.labelY ?? 16}px)">${city.name}<br>(${city.code})</span>
+          <span class="marker ${onRoute ? "active" : ""}" style="left:${point.x}%; top:${point.y}%"></span>
+          <span class="city-label" style="left:${point.x}%; top:${point.y}%; transform: translate(calc(-50% + ${city.labelX || 0}px), ${city.labelY ?? 16}px)">${city.name}<br>(${city.code})</span>
         `;
       }).join("");
     }
@@ -1223,7 +1246,7 @@
       const point = path.getPointAtLength(localDistance);
       const next = path.getPointAtLength(Math.min(pathLength, localDistance + 2));
       const svgRect = routeSvg.getBoundingClientRect();
-      const stageRect = routeSvg.parentElement.getBoundingClientRect();
+      const stageRect = globeStage.getBoundingClientRect();
       const x = (point.x / 1000) * svgRect.width + svgRect.left - stageRect.left;
       const y = (point.y / 620) * svgRect.height + svgRect.top - stageRect.top;
       const dx = next.x - point.x;
@@ -1286,6 +1309,8 @@
   </script>
 </body>
 </html>
+
+
 
 
 
