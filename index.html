@@ -230,7 +230,8 @@
 
     .map-canvas {
       position: relative;
-      min-height: 465px;
+      aspect-ratio: 16 / 9;
+      min-height: 430px;
       border: 1px solid rgba(202, 226, 255, .18);
       border-radius: 16px;
       overflow: hidden;
@@ -264,27 +265,30 @@
 
     .flight-path {
       fill: none;
-      stroke-width: 3.2;
+      stroke-width: 3;
       stroke-linecap: round;
-      opacity: .22;
+      opacity: .18;
       transition: opacity .2s ease, stroke-width .2s ease;
     }
 
     .flight-path.segment-active {
       opacity: .98;
-      stroke-width: 4.3;
+      stroke-width: 5.2;
       stroke-dasharray: 10 12;
       animation: routeDash 2.2s linear infinite;
-      filter: drop-shadow(0 0 8px currentColor);
+      filter: drop-shadow(0 0 10px rgba(85, 167, 255, .5));
     }
+
+    .flight-path.path-pink.segment-active { filter: drop-shadow(0 0 12px rgba(240, 77, 159, .62)); }
+    .flight-path.path-blue.segment-active { filter: drop-shadow(0 0 10px rgba(73, 208, 238, .55)); }
 
     @keyframes routeDash { to { stroke-dashoffset: -44; } }
 
     .marker {
       position: absolute;
       z-index: 4;
-      width: 18px;
-      height: 18px;
+      width: 24px;
+      height: 24px;
       border: 3px solid white;
       border-radius: 50%;
       background: var(--blue);
@@ -293,10 +297,10 @@
     }
 
     .marker.segment-active {
-      width: 24px;
-      height: 24px;
+      width: 34px;
+      height: 34px;
       background: rgb(var(--phase-rgb));
-      box-shadow: 0 0 18px rgba(var(--phase-rgb), .76);
+      box-shadow: 0 0 24px rgba(var(--phase-rgb), .78), 0 0 0 7px rgba(var(--phase-rgb), .12);
     }
 
     .city-label {
@@ -377,7 +381,7 @@
       .app { grid-template-columns: 1fr; padding: 14px; }
       .glass { max-width: 100%; }
       .map-panel { min-height: 0; padding: 12px; }
-      .map-canvas { min-height: 350px; }
+      .map-canvas { aspect-ratio: 16 / 9; min-height: 0; }
       .route-line { font-size: .78rem; letter-spacing: .025em; overflow: hidden; text-overflow: ellipsis; }
       .focus-row { grid-template-columns: 96px 1fr; }
     }
@@ -399,8 +403,11 @@
       .focus-row { grid-template-columns: 94px minmax(0, 1fr); gap: 10px; }
       .focus-value { overflow-wrap: anywhere; }
       .map-header { align-items: flex-start; flex-direction: column; }
-      .map-canvas { min-height: 325px; }
+      .map-canvas { aspect-ratio: 1 / 1; min-height: 0; }
       .city-label { font-size: .78rem; }
+      .marker { width: 22px; height: 22px; }
+      .marker.segment-active { width: 31px; height: 31px; }
+      .flight-path.segment-active { stroke-width: 4.8; }
       .phase-card { grid-template-columns: minmax(0, 1fr); min-height: 88px; padding: 11px; }
       .phase-status { display: none; }
       .phase-copy { font-size: .76rem; }
@@ -446,7 +453,7 @@
           <div class="map-caption">2D world map with active phase route and aircraft cue</div>
         </div>
         <div class="map-canvas" id="mapCanvas">
-          <svg class="world-map map-layer" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+          <svg class="world-map map-layer" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
         <path class="land" d="M334.5 585.7 L333.7 587.4 L332.9 589 L327.1 588.5 L320.9 588.7 L317.4 587.6 L317.4 587.4 L315.9 586.4 L322.1 586.6 L328.1 586.9 L330.2 585.5 L331.6 584.3 L334.5 585.7 Z" />
         <path class="land" d="M57.8 583.8 L52.4 584.3 L48.8 583.1 L47.1 581.9 L47 581.7 L45.2 580.7 L45.2 580.7 L46.9 579.4 L52.1 580 L54.9 581.1 L57 582.3 L57.8 583.8 Z" />
         <path class="land" d="M374.6 578.8 L378 580.3 L379.2 582.4 L379.5 583.9 L379.6 585.6 L375.3 586.7 L370.8 587.6 L365.6 588.4 L359.8 589.1 L353.2 588.9 L349.5 587.7 L350 586.3 L356 585.4 L358.4 584.2 L360.1 582.7 L361.3 581.5 L363 580.2 L364.8 578.8 L364.8 578.8 L366.2 578.8 L370.4 578.1 L374.6 578.8 Z" />
@@ -575,7 +582,7 @@
         <path class="land" d="M309.7 23.7 L317.1 24 L323.1 24.5 L328.2 25.4 L328.1 26.3 L321.3 27.8 L314.6 28.5 L312.1 29.3 L318.1 29.3 L311.6 31.3 L307 32.3 L302.3 35.1 L296.5 35.7 L294.8 36.4 L286.4 36.8 L290.2 37.2 L288.3 37.8 L290.6 39.5 L287.9 40.7 L283.6 41.7 L282.3 43 L278.4 44.1 L278.8 44.8 L283.6 44.7 L283.6 45.5 L276.2 47.6 L269 46.7 L260.8 47.2 L256.7 46.8 L251.4 46.6 L251.1 44.9 L256.2 44.2 L254.8 41.7 L256.5 41.4 L264 42.9 L260.2 40.7 L255.7 40.1 L257.9 38.7 L262.8 37.9 L263.6 36.7 L259.7 35.4 L258.5 33.6 L266.1 33.7 L268.3 34.1 L272.6 32.8 L266.4 32.4 L256.7 32.7 L251.8 31.5 L249.4 30.1 L246.2 29.1 L245.6 27.9 L249.7 27.3 L253 27.2 L258.4 26.6 L262.5 25.3 L265.9 25.5 L268.9 26.5 L271.1 24.6 L274.7 24 L279.7 23.7 L288.2 23.5 L289.7 23.9 L297.7 23.3 L303.7 23.5 L309.7 23.7 Z" />
         <path class="land" d="M424.7 22.3 L442.1 25.1 L437 26.4 L426.3 26.5 L411.4 26.9 L412.8 27.5 L422.6 27.1 L431 28.3 L436.4 27.2 L438.7 28.5 L435.6 30.5 L442.7 29.2 L456.2 27.9 L464.5 28.5 L466.1 30 L454.8 32.4 L453.2 33.2 L444.3 33.8 L450.7 34 L447.5 36.5 L445.3 38.7 L445.4 42.6 L448.7 44.8 L444.3 45 L439.8 46.1 L444.9 47.9 L445.6 50.8 L442.6 51.1 L446.2 54.1 L440 54.3 L443.2 55.7 L442.3 57 L438.4 57.5 L434.5 57.5 L438 59.8 L438.1 61.4 L432.6 59.9 L431.1 60.9 L434.9 61.7 L438.5 63.8 L439.6 66.6 L434.6 67.3 L432.5 65.9 L429 64 L430 66.3 L426.8 68.1 L434.1 68.3 L437.9 68.4 L430.5 71.4 L422.9 74.2 L414.8 75.3 L411.7 75.4 L408.9 76.7 L405 80.3 L399 82.7 L397.1 82.9 L393.4 83.7 L389.4 84.5 L387 86.7 L387 89.1 L385.6 91.3 L381.1 94.1 L382.2 96.8 L380.9 99.6 L379.5 103 L375.6 103.2 L371.5 100.4 L365.9 100.4 L363.2 98.5 L361.4 95.1 L356.6 90.8 L355.2 88.6 L354.8 85.5 L350.9 82.3 L351.9 79.8 L350.1 78.6 L352.8 74.5 L357 73.3 L358.1 71.8 L358.7 69.1 L355.5 70.4 L354 70.9 L351.5 71.4 L348.1 70.2 L347.9 67.9 L349 66.1 L351.6 66 L357.2 66.9 L352.5 64.7 L350 63.6 L347.2 64 L344.9 63.2 L348 60 L346.3 58.7 L344.1 56.3 L340.8 52.7 L337.2 51.3 L337.3 49.9 L329.8 47.9 L323.9 47.6 L316.5 47.8 L309.7 48 L306.5 46.9 L301.7 44.7 L309 43.7 L314.5 43.5 L302.7 42.6 L296.4 41.2 L296.8 39.8 L307.3 38.2 L317.5 36.5 L318.5 35.3 L311 34 L313.5 32.7 L323.1 30.3 L327.1 29.9 L326 28.3 L332.5 27.4 L341.1 26.9 L349.6 26.9 L352.7 27.9 L360 26 L366.7 27.3 L370.6 27.6 L376.3 28.7 L369.7 26.9 L370.1 25.4 L379.4 23.3 L389.2 23.5 L392.7 22.2 L402.5 21.9 L424.7 22.3 Z" />
       </svg>
-          <svg class="routes-svg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+          <svg class="routes-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
             <defs>
               <linearGradient id="routePink" x1="0" x2="1"><stop offset="0" stop-color="#f04d9f"/><stop offset="1" stop-color="#55a7ff"/></linearGradient>
               <linearGradient id="routeBlue" x1="0" x2="1"><stop offset="0" stop-color="#49d0ee"/><stop offset="1" stop-color="#55a7ff"/></linearGradient>
@@ -623,18 +630,32 @@
       { risk: "Same-day AMS connection", action: "Monitor YYZ winter departure status and confirm AMS gate and baggage-through information." }
     ];
 
+    const viewBox = { width: 1000, height: 620 };
+    const plotPadding = { left: .12, right: .12, top: .17, bottom: .17 };
+    const routePlan = [
+      { from: "TPE", to: "AMS", lift: 96, bias: 28 },
+      { from: "AMS", to: "BCN", lift: 44, bias: -20 },
+      { from: "BCN", to: "AMS", lift: 44, bias: 20 },
+      { from: "AMS", to: "YYZ", lift: 82, bias: -20 },
+      { from: "YYZ", to: "AMS", lift: 82, bias: 20 },
+      { from: "AMS", to: "TPE", lift: 96, bias: -28 }
+    ];
+
     const cities = {
-      TPE: { name: "Taipei", code: "TPE", x: 83.77, y: 36.09, labelX: 8, labelY: 15 },
-      AMS: { name: "Amsterdam", code: "AMS", x: 51.32, y: 20.94, labelX: 20, labelY: -34 },
-      BCN: { name: "Barcelona", code: "BCN", x: 50.58, y: 27.06, labelX: -22, labelY: 17 },
-      YYZ: { name: "Toronto", code: "YYZ", x: 27.88, y: 25.73, labelX: -18, labelY: 14 }
+      TPE: { name: "Taipei", code: "TPE", lon: 121.56, lat: 25.03, label: { x: 28, y: 28 }, mobileLabel: { x: 18, y: 24 } },
+      AMS: { name: "Amsterdam", code: "AMS", lon: 4.76, lat: 52.31, label: { x: 0, y: -48 }, mobileLabel: { x: 0, y: -42 } },
+      BCN: { name: "Barcelona", code: "BCN", lon: 2.17, lat: 41.38, label: { x: 0, y: 34 }, mobileLabel: { x: 0, y: 31 } },
+      YYZ: { name: "Toronto", code: "YYZ", lon: -79.63, lat: 43.68, label: { x: -30, y: 30 }, mobileLabel: { x: -18, y: 26 } }
     };
+
+    let plottedCities = {};
 
     let activeSegment = 0;
     let animationStart = performance.now();
     let activePathEls = [];
     let activePathLengths = [];
     let activeTotalPathLength = 0;
+    let compactMapLabels = window.matchMedia("(max-width: 620px)").matches;
     const expandedLegs = new Set([0, 1]);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -649,6 +670,66 @@
 
     function airportCode(label) { return label.match(/\(([^)]+)\)/)[1]; }
     function phaseStyle(index) { return `--phase-rgb: ${phaseColors[index]}`; }
+    function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+    function roundPoint(value) { return Math.round(value * 10) / 10; }
+
+    function geoToWorld(city) {
+      return {
+        x: ((city.lon + 180) / 360) * viewBox.width,
+        y: ((90 - city.lat) / 180) * viewBox.height
+      };
+    }
+
+    function getPlotBox() {
+      return {
+        left: viewBox.width * plotPadding.left,
+        right: viewBox.width * (1 - plotPadding.right),
+        top: viewBox.height * plotPadding.top,
+        bottom: viewBox.height * (1 - plotPadding.bottom)
+      };
+    }
+
+    function fitCitiesIntoPlot() {
+      const worldPoints = Object.entries(cities).map(([code, city]) => ({ code, ...geoToWorld(city) }));
+      const bounds = worldPoints.reduce((box, point) => ({
+        minX: Math.min(box.minX, point.x),
+        maxX: Math.max(box.maxX, point.x),
+        minY: Math.min(box.minY, point.y),
+        maxY: Math.max(box.maxY, point.y)
+      }), { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity });
+      const plot = getPlotBox();
+      const plotWidth = plot.right - plot.left;
+      const plotHeight = plot.bottom - plot.top;
+      const routeWidth = bounds.maxX - bounds.minX;
+      const routeHeight = bounds.maxY - bounds.minY;
+      const scale = Math.min(plotWidth / routeWidth, (plotHeight * .72) / routeHeight);
+      const sourceCenter = {
+        x: (bounds.minX + bounds.maxX) / 2,
+        y: (bounds.minY + bounds.maxY) / 2
+      };
+      const targetCenter = {
+        x: plot.left + plotWidth / 2,
+        y: plot.top + plotHeight / 2
+      };
+
+      return Object.fromEntries(worldPoints.map(point => {
+        const city = cities[point.code];
+        return [point.code, {
+          ...city,
+          x: roundPoint(targetCenter.x + (point.x - sourceCenter.x) * scale),
+          y: roundPoint(targetCenter.y + (point.y - sourceCenter.y) * scale)
+        }];
+      }));
+    }
+
+    function routeCurve(route) {
+      const start = plottedCities[route.from];
+      const end = plottedCities[route.to];
+      const plot = getPlotBox();
+      const midX = (start.x + end.x) / 2 + route.bias;
+      const controlY = clamp(Math.min(start.y, end.y) - route.lift, plot.top + 34, plot.bottom - 34);
+      return `M ${start.x} ${start.y} C ${roundPoint(midX)} ${roundPoint(controlY)}, ${roundPoint(midX)} ${roundPoint(controlY)}, ${end.x} ${end.y}`;
+    }
 
     function renderFocus() {
       const segment = tripSegments[activeSegment];
@@ -702,6 +783,12 @@
     }
 
     function renderMap() {
+      plottedCities = fitCitiesIntoPlot();
+      routePlan.forEach((route, index) => {
+        const path = document.querySelector(`#path-${index}`);
+        path.setAttribute("d", routeCurve(route));
+      });
+
       const activeLegs = new Set(tripSegments[activeSegment].legs);
       document.querySelectorAll(".flight-path").forEach((path, index) => path.classList.toggle("segment-active", activeLegs.has(index)));
       const citySet = new Set();
@@ -709,10 +796,17 @@
         citySet.add(airportCode(legs[index].from));
         citySet.add(airportCode(legs[index].to));
       });
-      markerLayer.innerHTML = Object.values(cities).map(city => `
-        <span class="marker ${citySet.has(city.code) ? "segment-active" : ""}" style="left:${city.x}%; top:${city.y}%; ${phaseStyle(activeSegment)}"></span>
-        <span class="city-label" style="left:${city.x}%; top:${city.y}%; transform: translate(calc(-50% + ${city.labelX}px), ${city.labelY}px)">${city.name}<br>(${city.code})</span>
-      `).join("");
+      const mobileLabels = window.matchMedia("(max-width: 620px)").matches;
+      compactMapLabels = mobileLabels;
+      markerLayer.innerHTML = Object.values(plottedCities).map(city => {
+        const label = mobileLabels ? city.mobileLabel : city.label;
+        const left = `${(city.x / viewBox.width) * 100}%`;
+        const top = `${(city.y / viewBox.height) * 100}%`;
+        return `
+        <span class="marker ${citySet.has(city.code) ? "segment-active" : ""}" style="left:${left}; top:${top}; ${phaseStyle(activeSegment)}"></span>
+        <span class="city-label" style="left:${left}; top:${top}; transform: translate(calc(-50% + ${label.x}px), ${label.y}px)">${city.name}<br>(${city.code})</span>
+      `;
+      }).join("");
       activePathEls = tripSegments[activeSegment].legs.map(index => document.querySelector(`#path-${index}`));
       activePathLengths = activePathEls.map(path => path.getTotalLength());
       activeTotalPathLength = activePathLengths.reduce((sum, length) => sum + length, 0);
@@ -737,11 +831,12 @@
       const distance = Math.min(pathLength, Math.max(0, remainingDistance));
       const point = path.getPointAtLength(distance);
       const next = path.getPointAtLength(Math.min(pathLength, distance + 2));
-      const svgRect = routeSvg.getBoundingClientRect();
+      const screenPoint = point.matrixTransform(path.getScreenCTM());
+      const screenNext = next.matrixTransform(path.getScreenCTM());
       const canvasRect = mapCanvas.getBoundingClientRect();
-      const x = (point.x / 1000) * svgRect.width + svgRect.left - canvasRect.left;
-      const y = (point.y / 620) * svgRect.height + svgRect.top - canvasRect.top;
-      const angle = Math.atan2(next.y - point.y, next.x - point.x) * 180 / Math.PI;
+      const x = screenPoint.x - canvasRect.left;
+      const y = screenPoint.y - canvasRect.top;
+      const angle = Math.atan2(screenNext.y - screenPoint.y, screenNext.x - screenPoint.x) * 180 / Math.PI;
       plane.style.transform = `translate(${x - 13}px, ${y - 13}px) rotate(${angle}deg)`;
     }
 
@@ -762,7 +857,11 @@
       if (event.key === "ArrowLeft") setSegment(activeSegment - 1);
       if (event.key === "ArrowRight") setSegment(activeSegment + 1);
     });
-    window.addEventListener("resize", () => positionPlane(reduceMotion ? animationStart + 4300 : performance.now()));
+    window.addEventListener("resize", () => {
+      const mobileLabels = window.matchMedia("(max-width: 620px)").matches;
+      if (mobileLabels !== compactMapLabels) renderMap();
+      else positionPlane(reduceMotion ? animationStart + 4300 : performance.now());
+    });
 
     setSegment(0);
     if (!reduceMotion) requestAnimationFrame(animatePlane);
