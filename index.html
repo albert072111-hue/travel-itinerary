@@ -6,19 +6,18 @@
   <title>Travel Itinerary Overview</title>
   <style>
     :root {
-      --bg: #020816;
-      --panel: rgba(8, 22, 40, .62);
-      --panel-strong: rgba(12, 31, 54, .82);
-      --line: rgba(188, 219, 255, .22);
-      --text: #f4f8ff;
-      --muted: #b4c6dd;
-      --blue: #49a1ff;
-      --cyan: #42d6ff;
-      --pink: #ff4da0;
-      --green: #57df7d;
-      --amber: #ffd166;
-      --shadow-blue: 0 0 28px rgba(54, 146, 255, .72);
-      --shadow-pink: 0 0 28px rgba(255, 64, 151, .78);
+      --bg: #040b16;
+      --panel: rgba(9, 24, 42, .76);
+      --panel-strong: rgba(11, 29, 51, .9);
+      --line: rgba(196, 222, 250, .22);
+      --text: #f5f8ff;
+      --muted: #b4c4d8;
+      --soft: #7f92aa;
+      --blue: #55a7ff;
+      --cyan: #49d0ee;
+      --pink: #f04d9f;
+      --green: #58d17a;
+      --shadow: 0 22px 60px rgba(0, 0, 0, .34);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -29,9 +28,9 @@
       min-height: 100vh;
       color: var(--text);
       background:
-        radial-gradient(circle at 80% 6%, rgba(63, 151, 255, .32), transparent 28%),
-        radial-gradient(circle at 12% 18%, rgba(255, 68, 163, .16), transparent 22%),
-        linear-gradient(180deg, #030814 0%, #061020 58%, #02050d 100%);
+        radial-gradient(circle at 78% 0%, rgba(74, 140, 210, .28), transparent 30%),
+        radial-gradient(circle at 18% 16%, rgba(240, 77, 159, .12), transparent 25%),
+        linear-gradient(180deg, #061326 0%, #030812 100%);
       overflow-x: hidden;
     }
 
@@ -41,831 +40,413 @@
       inset: 0;
       pointer-events: none;
       background-image:
-        radial-gradient(circle, rgba(255,255,255,.7) 0 1px, transparent 1.7px),
-        radial-gradient(circle, rgba(100,178,255,.5) 0 1px, transparent 1.8px);
-      background-size: 110px 90px, 180px 140px;
-      background-position: 16px 10px, 60px 32px;
-      opacity: .22;
+        radial-gradient(circle, rgba(255,255,255,.42) 0 1px, transparent 1.6px),
+        radial-gradient(circle, rgba(86,166,255,.28) 0 1px, transparent 1.8px);
+      background-size: 118px 92px, 190px 150px;
+      opacity: .18;
     }
+
+    button { font: inherit; }
 
     .app {
       position: relative;
-      display: grid;
-      grid-template-columns: clamp(360px, 28vw, 460px) minmax(0, 1fr);
-      grid-template-rows: auto 1fr auto;
-      gap: 18px;
-      width: 100%;
-      max-width: 100vw;
+      max-width: 1500px;
       min-height: 100vh;
-      padding: 18px 22px;
-      overflow: hidden;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: minmax(340px, 410px) minmax(0, 1fr);
+      gap: 18px;
     }
 
-    header {
-      grid-column: 2;
-      z-index: 2;
-      padding: 8px 10px 0;
-      min-width: 0;
+    .sidebar,
+    .workspace { min-width: 0; }
+
+    .sidebar {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .glass {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background:
+        linear-gradient(145deg, rgba(13, 34, 58, .84), rgba(5, 17, 31, .68));
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(16px);
+    }
+
+    header.glass {
+      padding: 20px;
+      overflow: hidden;
     }
 
     h1 {
       margin: 0;
       font-family: "Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif;
-      font-size: clamp(2.4rem, 5.2vw, 5.5rem);
-      line-height: .95;
+      font-size: clamp(2.35rem, 4.8vw, 5.2rem);
+      line-height: .92;
       font-weight: 500;
       letter-spacing: 0;
-      text-shadow: 0 0 24px rgba(255,255,255,.26);
-    }
-
-    .desktop-title-word {
-      display: inline;
+      text-shadow: 0 0 24px rgba(255,255,255,.16);
     }
 
     .route-line {
-      margin-top: 12px;
-      color: #d8e9ff;
-      font-size: clamp(1rem, 2vw, 1.95rem);
-      letter-spacing: .08em;
-      text-shadow: 0 0 16px rgba(73,161,255,.68);
+      margin-top: 14px;
+      color: #d7e8fb;
+      font-size: .92rem;
+      font-weight: 760;
+      letter-spacing: .055em;
+      white-space: nowrap;
     }
 
-    .status-panel {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      max-width: 920px;
-      margin-top: 16px;
-      padding: 12px;
-      border: 1px solid rgba(190, 222, 255, .24);
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(10, 27, 48, .72), rgba(5, 17, 33, .48));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 14px 34px rgba(0,0,0,.22);
-      backdrop-filter: blur(16px);
-    }
-
-    .status-item {
-      min-width: 0;
-      padding: 4px 6px;
-    }
-
-    .status-label {
-      display: block;
-      color: rgba(197, 217, 239, .72);
-      font-size: .68rem;
-      font-weight: 800;
-      letter-spacing: .13em;
-      line-height: 1.3;
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: #e9f4ff;
+      font-size: .74rem;
+      font-weight: 850;
+      letter-spacing: .15em;
       text-transform: uppercase;
     }
 
-    .status-value {
-      display: block;
-      margin-top: 4px;
-      color: #f7fbff;
-      font-size: .9rem;
-      font-weight: 750;
-      line-height: 1.3;
+    .section-label span { min-width: 0; }
+
+    .section-label span:last-child {
+      color: var(--soft);
+      font-weight: 760;
+      letter-spacing: .06em;
+      text-transform: none;
     }
 
-    .status-item.next-action {
-      grid-column: 1 / -1;
-      border-top: 1px solid rgba(206, 229, 255, .14);
-      padding-top: 10px;
-    }
+    .focus-panel { padding: 16px; }
 
-    .timeline-shell {
-      grid-row: 1 / 4;
-      position: relative;
-      z-index: 3;
-      border: 1px solid rgba(202, 226, 255, .35);
-      border-radius: 24px;
-      background: linear-gradient(145deg, rgba(13, 31, 54, .84), rgba(2, 15, 29, .58));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 24px 80px rgba(0,0,0,.42);
-      backdrop-filter: blur(18px);
-      padding: 18px 16px;
-      min-height: calc(100vh - 36px);
-      min-width: 0;
-    }
+    .focus-grid { display: grid; gap: 10px; }
 
-    .section-heading {
-      display: none;
-    }
-
-    .timeline {
+    .focus-row {
       display: grid;
-      gap: 9px;
-      position: relative;
-      padding-left: 24px;
+      grid-template-columns: 112px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid rgba(202, 226, 255, .13);
     }
 
-    .timeline::before {
-      content: "";
-      position: absolute;
-      left: 15px;
-      top: 26px;
-      bottom: 34px;
-      width: 3px;
-      border-radius: 999px;
-      background: linear-gradient(var(--pink), var(--blue) 30%, var(--blue) 74%, var(--pink));
-      box-shadow: 0 0 24px rgba(73,161,255,.78);
+    .focus-row:first-child { border-top: 0; padding-top: 0; }
+
+    .focus-key {
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 820;
+      letter-spacing: .1em;
+      text-transform: uppercase;
     }
 
-    .leg {
-      position: relative;
+    .focus-value {
+      color: var(--text);
+      font-size: .92rem;
+      font-weight: 720;
+      line-height: 1.4;
+    }
+
+    .phase-panel { padding: 12px; }
+    .phase-list { display: grid; gap: 9px; }
+
+    .phase-card {
+      width: 100%;
       display: grid;
-      grid-template-columns: 54px 1fr;
+      grid-template-columns: 1fr auto;
       gap: 12px;
       align-items: center;
-      width: 100%;
-      color: inherit;
-      border: 1px solid rgba(184, 215, 255, .18);
-      border-radius: 14px;
-      background: rgba(3, 18, 35, .54);
-      padding: 13px 14px 13px 22px;
+      min-height: 86px;
+      padding: 13px;
+      color: var(--text);
       text-align: left;
+      border: 1px solid rgba(203, 226, 250, .18);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(12, 30, 52, .62), rgba(4, 15, 28, .58));
       cursor: pointer;
-      transition: transform .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease, opacity .25s ease;
-      min-height: 82px;
+      transition: border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease;
     }
 
-    .leg:hover,
-    .leg:focus-visible {
+    .phase-card:hover,
+    .phase-card:focus-visible {
       outline: none;
-      transform: translateX(3px);
-      border-color: rgba(107, 180, 255, .7);
-      box-shadow: 0 0 0 1px rgba(73,161,255,.18), var(--shadow-blue);
+      border-color: rgba(135, 193, 248, .58);
+      box-shadow: 0 0 18px rgba(85, 167, 255, .18);
     }
 
-    .leg.segment-0 { --seg-color: 255, 77, 160; --seg-bg-a: 43, 18, 50; --seg-bg-b: 7, 28, 50; }
-    .leg.segment-1 { --seg-color: 66, 214, 255; --seg-bg-a: 6, 38, 58; --seg-bg-b: 5, 24, 45; }
-    .leg.segment-2 { --seg-color: 255, 209, 102; --seg-bg-a: 48, 39, 13; --seg-bg-b: 7, 32, 41; }
-
-    .leg.segment-selected {
-      border-color: rgba(var(--seg-color), .74);
-      background: linear-gradient(135deg, rgba(var(--seg-bg-a), .84), rgba(var(--seg-bg-b), .74));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 0 28px rgba(var(--seg-color), .58);
-      opacity: 1;
+    .phase-card.active {
+      border-color: rgba(var(--phase-rgb), .75);
+      background: linear-gradient(145deg, rgba(var(--phase-rgb), .18), rgba(8, 24, 42, .72));
+      box-shadow: 0 0 24px rgba(var(--phase-rgb), .22), inset 0 1px 0 rgba(255,255,255,.08);
     }
 
-    .leg.expanded {
-      min-height: 186px;
-      align-items: start;
-    }
+    .phase-title { display: block; font-weight: 850; line-height: 1.15; }
+    .phase-route { display: block; margin-top: 4px; color: #dcecff; font-size: .84rem; font-weight: 800; letter-spacing: .04em; }
+    .phase-copy { display: block; margin-top: 5px; color: var(--muted); font-size: .8rem; line-height: 1.32; }
+    .phase-status { color: rgb(var(--phase-rgb)); font-weight: 900; opacity: 0; }
+    .phase-card.active .phase-status { opacity: 1; }
 
-    .leg.dimmed { opacity: .72; }
-
-    .orb {
-      position: absolute;
-      left: -25px;
-      top: 16px;
+    .workspace {
       display: grid;
-      place-items: center;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      color: white;
-      font-weight: 800;
-      border: 2px solid currentColor;
-      background: rgba(5, 19, 37, .9);
-      box-shadow: 0 0 18px currentColor, inset 0 0 12px currentColor;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 14px;
     }
 
-    .leg.expanded .orb {
-      width: 48px;
-      height: 48px;
-      left: -28px;
-    }
-
-    .airline-icon {
-      display: grid;
-      place-items: center;
-      font-size: 2.15rem;
-      color: var(--blue);
-      filter: drop-shadow(0 0 10px currentColor);
-    }
-
-    .leg.pink .orb,
-    .leg.pink .airline-icon,
-    .leg.pink .date,
-    .leg.pink .plus-day { color: var(--pink); }
-
-    .leg.segment-selected .orb,
-    .leg.segment-selected .airline-icon,
-    .leg.segment-selected .date,
-    .leg.segment-selected .plus-day {
-      color: rgb(var(--seg-color));
-    }
-
-    .date {
-      color: var(--blue);
-      font-weight: 800;
-      font-size: 1rem;
-    }
-
-    .route {
-      margin-top: 4px;
-      font-weight: 720;
-      font-size: .98rem;
-      color: white;
-    }
-
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 14px;
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: .86rem;
-      align-items: center;
-    }
-
-    .airline {
-      font-weight: 800;
-      color: white;
-    }
-
-    .klm { color: #35c8ff; }
-    .ci { color: #ffe0ef; }
-
-    .details {
-      display: none;
-      grid-column: 1 / -1;
-      margin-top: 12px;
-      color: #d8e8fb;
-      line-height: 1.45;
-      font-size: .87rem;
-    }
-
-    .leg.expanded .details {
-      display: grid;
-      gap: 8px;
-    }
-
-    .detail-row {
-      padding: 9px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(210, 232, 255, .14);
-      background: rgba(255,255,255,.045);
-    }
-
-    .collapse {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      color: rgba(255,255,255,.78);
-      font-size: .9rem;
-    }
-
-    .globe-stage {
-      grid-column: 2;
-      grid-row: 2;
+    .map-panel {
       position: relative;
-      --map-scale: 1.18;
-      --map-x: -8%;
-      --map-y: -8%;
-      min-width: 0;
-      min-height: 560px;
       overflow: hidden;
-      border-radius: 18px;
+      min-height: 540px;
+      padding: 16px;
     }
 
-    .earth {
-      position: absolute;
-      left: 2%;
-      right: 0;
-      bottom: -26%;
-      height: min(72vw, 760px);
-      min-height: 520px;
-      border-radius: 50% 50% 0 0 / 58% 58% 0 0;
-      background:
-        radial-gradient(circle at 52% 0%, rgba(255,255,255,.42), transparent 3%),
-        radial-gradient(circle at 56% 30%, rgba(255,255,255,.08), transparent 6%),
-        radial-gradient(ellipse at 52% 18%, rgba(144, 199, 255, .58), transparent 16%),
-        radial-gradient(ellipse at 50% 18%, rgba(18, 77, 135, .82), transparent 42%),
-        linear-gradient(135deg, transparent 0 28%, rgba(141, 110, 78, .24) 29% 34%, transparent 35% 45%, rgba(117, 103, 73, .22) 46% 52%, transparent 53%),
-        linear-gradient(40deg, transparent 0 19%, rgba(76, 91, 78, .35) 20% 26%, transparent 27% 48%, rgba(82, 72, 52, .32) 49% 56%, transparent 57%),
-        radial-gradient(ellipse at 50% 38%, #0d3157 0%, #061a31 48%, #021020 72%);
-      box-shadow:
-        inset 0 24px 38px rgba(222, 242, 255, .24),
-        inset 0 -90px 120px rgba(0,0,0,.72),
-        0 -8px 34px rgba(92, 177, 255, .68);
-      filter: saturate(1.2);
-    }
-
-    .earth::after {
+    .map-panel::before {
       content: "";
       position: absolute;
-      inset: 4% 7% 0;
-      opacity: .38;
-      background-image:
-        radial-gradient(circle, rgba(255,220,153,.95) 0 1.3px, transparent 1.8px),
-        radial-gradient(circle, rgba(164,213,255,.8) 0 1px, transparent 1.7px);
-      background-size: 42px 30px, 68px 46px;
-      mask-image: radial-gradient(ellipse at center, black 0 58%, transparent 73%);
-    }
-
-    .world-map {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      opacity: .42;
-      filter: drop-shadow(0 0 9px rgba(102, 188, 255, .22));
-      transform: translate(var(--map-x), var(--map-y)) scale(var(--map-scale));
-      transform-origin: center center;
+      inset: -30% -20% auto auto;
+      width: 520px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(85,167,255,.18), transparent 64%);
       pointer-events: none;
     }
 
-    .land {
-      fill: rgba(172, 209, 224, .15);
-      stroke: rgba(217, 239, 255, .32);
-      stroke-width: .8;
-      vector-effect: non-scaling-stroke;
+    .map-header {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
     }
-.routes-svg {
+
+    .map-title { font-size: .82rem; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; color: #e8f5ff; }
+    .map-caption { color: var(--muted); font-size: .82rem; }
+
+    .map-canvas {
+      position: relative;
+      min-height: 465px;
+      border: 1px solid rgba(202, 226, 255, .18);
+      border-radius: 16px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 54% 28%, rgba(94, 166, 229, .24), transparent 34%),
+        linear-gradient(180deg, rgba(8, 28, 50, .96), rgba(3, 12, 23, .98));
+    }
+
+    .map-canvas::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(125deg, transparent 0 22%, rgba(255,255,255,.06) 23% 28%, transparent 29% 52%, rgba(255,255,255,.04) 53% 58%, transparent 59%),
+        radial-gradient(circle at 48% 20%, rgba(255,255,255,.08), transparent 22%);
+      opacity: .75;
+    }
+
+    .map-layer,
+    .routes-svg {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      overflow: visible;
-      z-index: 2;
-      transform: translate(var(--map-x), var(--map-y)) scale(var(--map-scale));
-      transform-origin: center center;
     }
+
+    .map-layer { opacity: .34; z-index: 1; }
+    .land { fill: rgba(150, 190, 210, .11); stroke: rgba(210, 232, 246, .24); stroke-width: .65; vector-effect: non-scaling-stroke; }
+    .routes-svg { z-index: 2; overflow: visible; }
 
     .flight-path {
       fill: none;
-      stroke-width: 3.4;
+      stroke-width: 3.2;
       stroke-linecap: round;
-      opacity: .46;
-      filter: drop-shadow(0 0 8px currentColor);
-      transition: opacity .25s ease, stroke-width .25s ease;
+      opacity: .22;
+      transition: opacity .2s ease, stroke-width .2s ease;
     }
 
-    .flight-path.active {
-      opacity: 1;
-      stroke-width: 5;
+    .flight-path.segment-active {
+      opacity: .98;
+      stroke-width: 4.3;
       stroke-dasharray: 10 12;
-      animation: dash 1.2s linear infinite;
+      animation: routeDash 2.2s linear infinite;
+      filter: drop-shadow(0 0 8px currentColor);
     }
 
-    @keyframes dash { to { stroke-dashoffset: -44; } }
+    @keyframes routeDash { to { stroke-dashoffset: -44; } }
 
     .marker {
       position: absolute;
-      display: grid;
-      place-items: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
+      z-index: 4;
+      width: 18px;
+      height: 18px;
       border: 3px solid white;
+      border-radius: 50%;
       background: var(--blue);
-      box-shadow: 0 0 18px var(--blue), 0 0 34px var(--blue);
       transform: translate(-50%, -50%);
-      z-index: 2;
+      box-shadow: 0 0 13px rgba(85, 167, 255, .5);
     }
 
-    .marker.active {
-      width: 31px;
-      height: 31px;
-      background: var(--pink);
-      box-shadow: 0 0 24px var(--pink), 0 0 46px var(--pink);
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      50% { transform: translate(-50%, -50%) scale(1.16); }
+    .marker.segment-active {
+      width: 24px;
+      height: 24px;
+      background: rgb(var(--phase-rgb));
+      box-shadow: 0 0 18px rgba(var(--phase-rgb), .76);
     }
 
     .city-label {
       position: absolute;
-      z-index: 3;
-      font-weight: 800;
+      z-index: 5;
+      color: #f8fbff;
+      font-size: .86rem;
+      font-weight: 850;
       line-height: 1.08;
       text-align: center;
-      text-shadow: 0 2px 12px #000, 0 0 12px rgba(255,255,255,.35);
+      text-shadow: 0 2px 10px rgba(0,0,0,.92);
       pointer-events: none;
     }
 
     .plane-mover {
       position: absolute;
-      z-index: 4;
+      z-index: 6;
       left: 0;
       top: 0;
-      font-size: 2rem;
-      color: white;
-      filter: drop-shadow(0 0 14px var(--blue));
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 1.35rem;
+      line-height: 1;
       transform-origin: center;
+      filter: drop-shadow(0 0 12px rgba(var(--phase-rgb), .75));
       will-change: transform;
+      pointer-events: none;
     }
 
-    .sky-plane {
-      position: absolute;
-      right: 5%;
-      top: 4%;
-      font-size: clamp(2.3rem, 5vw, 4.4rem);
-      color: white;
-      transform: rotate(-16deg);
-      filter: drop-shadow(0 0 20px var(--blue));
-    }
+    .timeline-shell { padding: 14px; }
+    .timeline { display: grid; gap: 9px; }
 
-    .sky-plane::after {
-      content: "";
-      position: absolute;
-      right: -210px;
-      top: 38%;
-      width: 250px;
-      height: 70px;
-      border-top: 4px solid rgba(73,161,255,.85);
-      border-radius: 50%;
-      box-shadow: 0 -12px 24px rgba(73,161,255,.45);
-    }
-
-    .bottom {
-      grid-column: 2;
-      grid-row: 3;
-      z-index: 4;
+    .leg {
+      width: 100%;
       display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 12px;
+      grid-template-columns: 34px 1fr auto;
+      gap: 11px;
       align-items: center;
-      padding-bottom: 8px;
-      min-width: 0;
-    }
-
-    .nav-btn {
-      display: grid;
-      place-items: center;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 1px solid rgba(191, 222, 255, .36);
-      color: white;
-      background: rgba(8, 24, 43, .48);
-      box-shadow: 0 0 18px rgba(73,161,255,.28);
-      cursor: pointer;
-      font-size: 2rem;
-    }
-
-    .cards {
-      display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: minmax(128px, 1fr);
-      gap: 12px;
-      overflow: hidden;
-      min-width: 0;
-    }
-
-    .info-card {
-      min-height: 154px;
-      border: 1px solid rgba(206, 229, 255, .38);
-      border-radius: 14px;
-      background: linear-gradient(145deg, rgba(15, 34, 57, .76), rgba(2, 15, 29, .62));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.13), 0 14px 38px rgba(0,0,0,.26);
-      backdrop-filter: blur(16px);
-      padding: 16px 14px;
-      display: grid;
-      align-content: space-between;
-      justify-items: center;
-      text-align: center;
-      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .25s ease;
+      padding: 11px;
+      color: var(--text);
+      text-align: left;
+      border: 1px solid rgba(202, 226, 255, .16);
+      border-radius: 13px;
+      background: rgba(6, 18, 31, .68);
       cursor: pointer;
     }
 
-    .info-card.related,
-    .info-card.active-segment {
-      border-color: rgba(94, 226, 128, .7);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 26px rgba(72, 220, 116, .42);
-      transform: translateY(-5px);
-    }
+    .leg.segment-selected { border-color: rgba(var(--phase-rgb), .58); background: rgba(var(--phase-rgb), .075); }
+    .leg:hover,
+    .leg:focus-visible { outline: none; border-color: rgba(164, 205, 244, .5); }
 
-    .info-card.segment-card-0.active-segment {
-      border-color: rgba(255, 77, 160, .72);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 26px rgba(255, 77, 160, .42);
-    }
-
-    .info-card.segment-card-1.active-segment {
-      border-color: rgba(66, 214, 255, .72);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 26px rgba(66, 214, 255, .42);
-    }
-
-    .info-card.segment-card-2.active-segment {
-      border-color: rgba(255, 209, 102, .72);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 26px rgba(255, 209, 102, .36);
-    }
-
-    .info-card:hover,
-    .info-card:focus-visible {
-      outline: none;
-      border-color: rgba(111, 190, 255, .7);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 24px rgba(73,161,255,.46);
-    }
-
-    .info-card.faded { opacity: .62; }
-
-    .info-card.faded .check {
-      opacity: 0;
-      transform: scale(.72);
-    }
-
-    .card-icon {
-      font-size: 2.65rem;
-      color: #b9d9ff;
-      filter: drop-shadow(0 0 12px var(--blue));
-    }
-
-    .card-title {
-      margin-top: 5px;
-      font-weight: 760;
-      font-size: .98rem;
-    }
-
-    .card-copy {
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: .84rem;
-      line-height: 1.35;
-    }
-
-    .check {
+    .leg-num {
       display: grid;
       place-items: center;
-      width: 27px;
-      height: 27px;
-      margin-top: 10px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      color: white;
-      background: rgba(58, 187, 90, .82);
-      box-shadow: 0 0 12px rgba(82, 229, 118, .72);
+      color: #fff;
+      background: rgba(var(--phase-rgb), .32);
+      border: 1px solid rgba(var(--phase-rgb), .7);
+      font-size: .8rem;
       font-weight: 900;
     }
 
-    .dots {
-      grid-column: 2;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .dot {
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      background: rgba(190, 210, 235, .52);
-    }
-
-    .dot.active {
-      background: var(--blue);
-      box-shadow: 0 0 14px var(--blue);
-    }
-
-    .mobile-active {
-      display: none;
-    }
+    .leg-date { color: rgb(var(--phase-rgb)); font-weight: 850; font-size: .9rem; }
+    .leg-route { display: block; margin-top: 2px; font-size: .94rem; font-weight: 780; line-height: 1.24; }
+    .leg-meta { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: 5px; color: var(--muted); font-size: .8rem; }
+    .leg-toggle { color: var(--muted); font-size: .78rem; font-weight: 800; }
+    .leg-details { display: none; grid-column: 2 / -1; gap: 7px; margin-top: 7px; }
+    .leg.expanded .leg-details { display: grid; }
+    .detail-row { padding: 8px 9px; border-radius: 9px; background: rgba(255,255,255,.045); border: 1px solid rgba(202, 226, 255, .1); color: #dce9f7; font-size: .82rem; line-height: 1.35; }
+    .detail-row strong { color: #fff; }
 
     @media (max-width: 980px) {
-      .app {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto auto;
-        padding: 14px;
-        gap: 14px;
-      }
-
-      header,
-      .globe-stage,
-      .bottom {
-        grid-column: 1;
-        grid-row: auto;
-      }
-
-      .timeline-shell {
-        grid-column: 1;
-        grid-row: auto;
-        min-height: 0;
-        order: 2;
-        width: 100%;
-      }
-
-      header { order: 1; padding-left: 2px; }
-      .bottom { order: 2; }
-      .globe-stage { order: 3; width: 100%; min-height: 420px; }
-      .timeline-shell { order: 4; }
-      .cards { grid-auto-columns: minmax(190px, 48%); overflow-x: auto; padding: 8px 2px 16px; scroll-snap-type: x mandatory; }
-      .info-card { scroll-snap-align: center; }
-      .timeline { padding-left: 20px; }
+      .app { grid-template-columns: 1fr; padding: 14px; }
+      .glass { max-width: 100%; }
+      .map-panel { min-height: 0; padding: 12px; }
+      .map-canvas { min-height: 350px; }
+      .route-line { font-size: .78rem; letter-spacing: .025em; overflow: hidden; text-overflow: ellipsis; }
+      .focus-row { grid-template-columns: 96px 1fr; }
     }
 
     @media (max-width: 620px) {
-      header {
-        padding-top: 2px;
-      }
-
-      h1 {
-        font-size: clamp(2.15rem, 11vw, 2.9rem);
-        line-height: .92;
-        max-width: 330px;
-      }
-
-      .desktop-title-word {
-        display: none;
-      }
-
-      .route-line {
-        margin-top: 10px;
-        font-size: .78rem;
-        line-height: 1.25;
-        letter-spacing: .035em;
-        white-space: nowrap;
-      }
-
-      .status-panel {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 7px;
-        margin-top: 12px;
-        padding: 10px 12px;
-        border-radius: 12px;
-      }
-
-      .status-item {
-        padding: 0;
-      }
-
-      .status-item.next-action {
-        grid-column: 1 / -1;
-        padding-top: 8px;
-      }
-
-      .status-item:nth-child(3) {
-        grid-column: 1 / -1;
-      }
-
-      .status-label {
-        font-size: .62rem;
-      }
-
-      .status-value {
-        margin-top: 2px;
-        font-size: .78rem;
-        line-height: 1.32;
-      }
-
-      .timeline-shell {
-        border-radius: 18px;
-        padding: 14px 12px;
-      }
-
-      .section-heading {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin: 0 0 12px 36px;
-        color: #eaf4ff;
-        font-size: .78rem;
-        font-weight: 800;
-        letter-spacing: .16em;
-        text-transform: uppercase;
-      }
-
-      .section-heading span:last-child {
-        color: var(--muted);
-        font-size: .72rem;
-        font-weight: 700;
-        letter-spacing: .08em;
-        text-transform: none;
-      }
-
-      .leg {
-        grid-template-columns: 38px 1fr;
-        padding-right: 10px;
-      }
-
-      .airline-icon { font-size: 1.65rem; }
-      .route { font-size: .9rem; }
-      .meta { font-size: .78rem; }
-      .bottom {
-        grid-template-columns: 1fr;
-        gap: 0;
-        padding-bottom: 0;
-      }
-      .nav-btn { display: none; }
-      .cards {
-        grid-auto-flow: row;
-        grid-auto-columns: unset;
-        grid-template-columns: 1fr;
-        gap: 7px;
-        overflow: visible;
-        padding: 0;
-      }
-      .info-card {
-        min-height: 88px;
-        grid-template-columns: 1fr 28px;
-        justify-items: start;
-        align-items: center;
-        text-align: left;
-        padding: 10px 12px;
-        border-radius: 12px;
-      }
-      .info-card > div:first-child {
-        display: grid;
-        grid-template-columns: 36px 1fr;
-        grid-template-rows: auto auto auto;
-        column-gap: 9px;
-        align-items: center;
-        width: 100%;
-      }
-      .info-card .card-title,
-      .info-card .card-copy {
-        grid-column: 2;
-      }
-      .card-icon {
-        grid-row: 1 / 3;
-        font-size: 1.65rem;
-      }
-      .card-title {
-        margin-top: 0;
-        font-size: .9rem;
-        line-height: 1.12;
-      }
-      .card-copy {
-        display: -webkit-box;
-        margin-top: 4px;
-        font-size: .72rem;
-        line-height: 1.25;
-        color: rgba(210, 226, 245, .74);
+      body { overflow-x: clip; }
+      .app { width: 100%; max-width: 100%; padding: 14px; gap: 14px; }
+      h1 { font-size: 2.65rem; }
+      header.glass { padding: 16px; }
+      .section-label { align-items: flex-start; gap: 8px; }
+      .section-label span:last-child {
+        max-width: 45%;
         overflow: hidden;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: right;
       }
-      .check {
-        margin-top: 0;
-        width: 24px;
-        height: 24px;
-      }
-      .dots { display: none; }
-      .globe-stage {
-        --map-scale: 1.34;
-        --map-x: -5%;
-        --map-y: 5%;
-        min-height: 330px;
-        border-radius: 15px;
-      }
-      .world-map {
-        opacity: .58;
-      }
-      .earth { left: -36%; right: -34%; height: 510px; min-height: 390px; }
-      .city-label {
-        font-size: .84rem;
-        line-height: 1.05;
-      }
-      .marker.active {
-        width: 28px;
-        height: 28px;
-      }
-      .sky-plane::after { width: 140px; right: -118px; }
+      .focus-panel { padding: 14px; }
+      .focus-row { grid-template-columns: 94px minmax(0, 1fr); gap: 10px; }
+      .focus-value { overflow-wrap: anywhere; }
+      .map-header { align-items: flex-start; flex-direction: column; }
+      .map-canvas { min-height: 325px; }
+      .city-label { font-size: .78rem; }
+      .phase-card { grid-template-columns: minmax(0, 1fr); min-height: 88px; padding: 11px; }
+      .phase-status { display: none; }
+      .phase-copy { font-size: .76rem; }
+      .leg { grid-template-columns: 30px 1fr; }
+      .leg-toggle { display: none; }
+      .leg-details { grid-column: 1 / -1; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
+      *, *::before, *::after {
         animation-duration: .001ms !important;
         animation-iteration-count: 1 !important;
         scroll-behavior: auto !important;
         transition-duration: .001ms !important;
       }
-
-      .flight-path.active {
-        stroke-dasharray: none;
-      }
-
-      .plane-mover {
-        display: none;
-      }
+      .flight-path.segment-active { stroke-dasharray: none; }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <aside class="timeline-shell" aria-label="Flight timeline">
-      <div class="section-heading">
-        <span>Flight Details</span>
-        <span>Tap to expand</span>
-      </div>
-      <div class="timeline" id="timeline"></div>
-    </aside>
+    <section class="sidebar">
+      <header class="glass">
+        <h1>Travel Itinerary Overview</h1>
+        <div class="route-line">TPE &rarr; AMS &rarr; BCN &rarr; AMS &rarr; YYZ &rarr; AMS &rarr; TPE</div>
+      </header>
 
-    <header>
-      <h1>Travel Itinerary <span class="desktop-title-word">Overview</span></h1>
-      <div class="route-line">TPE &rarr; AMS &rarr; BCN &rarr; AMS &rarr; YYZ &rarr; AMS &rarr; TPE</div>
-      <section class="status-panel" id="statusPanel" aria-live="polite" aria-label="Current trip phase status"></section>
-    </header>
+      <section class="focus-panel glass" aria-live="polite">
+        <div class="section-label"><span>Current Focus</span><span id="focusPhaseLabel"></span></div>
+        <div class="focus-grid" id="focusGrid"></div>
+      </section>
 
-    <section class="globe-stage" aria-label="Interactive route map">
-      <div class="earth"></div>
-      <svg class="world-map" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+      <section class="phase-panel glass" aria-label="Trip phases">
+        <div class="section-label"><span>Trip Phases</span><span>Tap to switch</span></div>
+        <div class="phase-list" id="phaseList"></div>
+      </section>
+    </section>
+
+    <section class="workspace">
+      <section class="map-panel glass" aria-label="Route map">
+        <div class="map-header">
+          <div class="map-title">Route Map</div>
+          <div class="map-caption">2D world map with active phase route and aircraft cue</div>
+        </div>
+        <div class="map-canvas" id="mapCanvas">
+          <svg class="world-map map-layer" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
         <path class="land" d="M334.5 585.7 L333.7 587.4 L332.9 589 L327.1 588.5 L320.9 588.7 L317.4 587.6 L317.4 587.4 L315.9 586.4 L322.1 586.6 L328.1 586.9 L330.2 585.5 L331.6 584.3 L334.5 585.7 Z" />
         <path class="land" d="M57.8 583.8 L52.4 584.3 L48.8 583.1 L47.1 581.9 L47 581.7 L45.2 580.7 L45.2 580.7 L46.9 579.4 L52.1 580 L54.9 581.1 L57 582.3 L57.8 583.8 Z" />
         <path class="land" d="M374.6 578.8 L378 580.3 L379.2 582.4 L379.5 583.9 L379.6 585.6 L375.3 586.7 L370.8 587.6 L365.6 588.4 L359.8 589.1 L353.2 588.9 L349.5 587.7 L350 586.3 L356 585.4 L358.4 584.2 L360.1 582.7 L361.3 581.5 L363 580.2 L364.8 578.8 L364.8 578.8 L366.2 578.8 L370.4 578.1 L374.6 578.8 Z" />
@@ -994,245 +575,156 @@
         <path class="land" d="M309.7 23.7 L317.1 24 L323.1 24.5 L328.2 25.4 L328.1 26.3 L321.3 27.8 L314.6 28.5 L312.1 29.3 L318.1 29.3 L311.6 31.3 L307 32.3 L302.3 35.1 L296.5 35.7 L294.8 36.4 L286.4 36.8 L290.2 37.2 L288.3 37.8 L290.6 39.5 L287.9 40.7 L283.6 41.7 L282.3 43 L278.4 44.1 L278.8 44.8 L283.6 44.7 L283.6 45.5 L276.2 47.6 L269 46.7 L260.8 47.2 L256.7 46.8 L251.4 46.6 L251.1 44.9 L256.2 44.2 L254.8 41.7 L256.5 41.4 L264 42.9 L260.2 40.7 L255.7 40.1 L257.9 38.7 L262.8 37.9 L263.6 36.7 L259.7 35.4 L258.5 33.6 L266.1 33.7 L268.3 34.1 L272.6 32.8 L266.4 32.4 L256.7 32.7 L251.8 31.5 L249.4 30.1 L246.2 29.1 L245.6 27.9 L249.7 27.3 L253 27.2 L258.4 26.6 L262.5 25.3 L265.9 25.5 L268.9 26.5 L271.1 24.6 L274.7 24 L279.7 23.7 L288.2 23.5 L289.7 23.9 L297.7 23.3 L303.7 23.5 L309.7 23.7 Z" />
         <path class="land" d="M424.7 22.3 L442.1 25.1 L437 26.4 L426.3 26.5 L411.4 26.9 L412.8 27.5 L422.6 27.1 L431 28.3 L436.4 27.2 L438.7 28.5 L435.6 30.5 L442.7 29.2 L456.2 27.9 L464.5 28.5 L466.1 30 L454.8 32.4 L453.2 33.2 L444.3 33.8 L450.7 34 L447.5 36.5 L445.3 38.7 L445.4 42.6 L448.7 44.8 L444.3 45 L439.8 46.1 L444.9 47.9 L445.6 50.8 L442.6 51.1 L446.2 54.1 L440 54.3 L443.2 55.7 L442.3 57 L438.4 57.5 L434.5 57.5 L438 59.8 L438.1 61.4 L432.6 59.9 L431.1 60.9 L434.9 61.7 L438.5 63.8 L439.6 66.6 L434.6 67.3 L432.5 65.9 L429 64 L430 66.3 L426.8 68.1 L434.1 68.3 L437.9 68.4 L430.5 71.4 L422.9 74.2 L414.8 75.3 L411.7 75.4 L408.9 76.7 L405 80.3 L399 82.7 L397.1 82.9 L393.4 83.7 L389.4 84.5 L387 86.7 L387 89.1 L385.6 91.3 L381.1 94.1 L382.2 96.8 L380.9 99.6 L379.5 103 L375.6 103.2 L371.5 100.4 L365.9 100.4 L363.2 98.5 L361.4 95.1 L356.6 90.8 L355.2 88.6 L354.8 85.5 L350.9 82.3 L351.9 79.8 L350.1 78.6 L352.8 74.5 L357 73.3 L358.1 71.8 L358.7 69.1 L355.5 70.4 L354 70.9 L351.5 71.4 L348.1 70.2 L347.9 67.9 L349 66.1 L351.6 66 L357.2 66.9 L352.5 64.7 L350 63.6 L347.2 64 L344.9 63.2 L348 60 L346.3 58.7 L344.1 56.3 L340.8 52.7 L337.2 51.3 L337.3 49.9 L329.8 47.9 L323.9 47.6 L316.5 47.8 L309.7 48 L306.5 46.9 L301.7 44.7 L309 43.7 L314.5 43.5 L302.7 42.6 L296.4 41.2 L296.8 39.8 L307.3 38.2 L317.5 36.5 L318.5 35.3 L311 34 L313.5 32.7 L323.1 30.3 L327.1 29.9 L326 28.3 L332.5 27.4 L341.1 26.9 L349.6 26.9 L352.7 27.9 L360 26 L366.7 27.3 L370.6 27.6 L376.3 28.7 L369.7 26.9 L370.1 25.4 L379.4 23.3 L389.2 23.5 L392.7 22.2 L402.5 21.9 L424.7 22.3 Z" />
       </svg>
-      <svg class="routes-svg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="pinkBlue" x1="0" x2="1">
-            <stop offset="0" stop-color="#ff4da0" />
-            <stop offset="1" stop-color="#49a1ff" />
-          </linearGradient>
-          <linearGradient id="blueArc" x1="0" x2="1">
-            <stop offset="0" stop-color="#49a1ff" />
-            <stop offset="1" stop-color="#42d6ff" />
-          </linearGradient>
-        </defs>
-        <path id="path-0" class="flight-path" stroke="url(#pinkBlue)" d="M 837.7 223.8 C 766.6 24.8, 604.3 24.8, 513.2 129.8" />
-        <path id="path-1" class="flight-path" stroke="url(#blueArc)" d="M 513.2 129.8 C 507.4 111.8, 503.6 111.8, 505.8 167.8" />
-        <path id="path-2" class="flight-path" stroke="url(#blueArc)" d="M 505.8 167.8 C 511.6 111.8, 515.4 111.8, 513.2 129.8" />
-        <path id="path-3" class="flight-path" stroke="url(#blueArc)" d="M 513.2 129.8 C 444.6 53.8, 327.4 53.8, 278.8 159.6" />
-        <path id="path-4" class="flight-path" stroke="url(#blueArc)" d="M 278.8 159.6 C 347.4 53.8, 464.6 53.8, 513.2 129.8" />
-        <path id="path-5" class="flight-path" stroke="url(#pinkBlue)" d="M 513.2 129.8 C 584.3 24.8, 746.6 24.8, 837.7 223.8" />
-      </svg>
-      <div class="plane-mover" id="planeMover">&#9992;</div>
-      <div class="sky-plane">&#9992;</div>
-      <div id="markers"></div>
-    </section>
+          <svg class="routes-svg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="routePink" x1="0" x2="1"><stop offset="0" stop-color="#f04d9f"/><stop offset="1" stop-color="#55a7ff"/></linearGradient>
+              <linearGradient id="routeBlue" x1="0" x2="1"><stop offset="0" stop-color="#49d0ee"/><stop offset="1" stop-color="#55a7ff"/></linearGradient>
+            </defs>
+            <path id="path-0" class="flight-path path-pink" stroke="url(#routePink)" d="M 837.7 223.8 C 766.6 24.8, 604.3 24.8, 513.2 129.8" />
+            <path id="path-1" class="flight-path path-blue" stroke="url(#routeBlue)" d="M 513.2 129.8 C 507.4 111.8, 503.6 111.8, 505.8 167.8" />
+            <path id="path-2" class="flight-path path-blue" stroke="url(#routeBlue)" d="M 505.8 167.8 C 511.6 111.8, 515.4 111.8, 513.2 129.8" />
+            <path id="path-3" class="flight-path path-blue" stroke="url(#routeBlue)" d="M 513.2 129.8 C 444.6 53.8, 327.4 53.8, 278.8 159.6" />
+            <path id="path-4" class="flight-path path-blue" stroke="url(#routeBlue)" d="M 278.8 159.6 C 347.4 53.8, 464.6 53.8, 513.2 129.8" />
+            <path id="path-5" class="flight-path path-pink" stroke="url(#routePink)" d="M 513.2 129.8 C 584.3 24.8, 746.6 24.8, 837.7 223.8" />
+          </svg>
+          <div id="markers"></div>
+          <div class="plane-mover" id="planeMover" aria-hidden="true">&#9992;</div>
+        </div>
+      </section>
 
-    <section class="bottom" aria-label="Trip insight cards">
-      <button class="nav-btn" id="prev" type="button" aria-label="Previous trip phase">&lsaquo;</button>
-      <div>
-        <div class="cards" id="cards"></div>
-        <div class="dots" id="dots"></div>
-      </div>
-      <button class="nav-btn" id="next" type="button" aria-label="Next trip phase">&rsaquo;</button>
+      <section class="timeline-shell glass" aria-label="All flight legs">
+        <div class="section-label"><span>Flight Details</span><span>All six legs visible</span></div>
+        <div class="timeline" id="timeline"></div>
+      </section>
     </section>
   </main>
 
   <script>
+    const phaseColors = ["240, 77, 159", "73, 208, 238", "240, 77, 159"];
+
     const legs = [
-      {
-        date: "Jan 31",
-        from: "Taipei (TPE)",
-        to: "Amsterdam (AMS)",
-        airline: "CHINA AIRLINES",
-        airlineClass: "ci",
-        flight: "CI73",
-        dep: "23:05",
-        arr: "07:50",
-        plus: "+1 day",
-        tone: "pink",
-        details: [
-          ["Role", "Long-haul outbound sector into Amsterdam."],
-          ["Connection note", "Connect to AMS-BCN after arrival."],
-          ["Airport action", "Follow transfer signs and prepare for Schengen immigration."],
-          ["Personal reminder", "Keep passport, boarding pass, and essentials easily accessible."]
-        ],
-        segment: 0
-      },
-      { date: "Feb 1", from: "Amsterdam (AMS)", to: "Barcelona (BCN)", airline: "KLM", airlineClass: "klm", flight: "KL1513", dep: "10:05", arr: "12:15", tone: "blue", details: [["Role", "Final sector to Barcelona."], ["Connection note", "This follows the short AMS connection after CI73."], ["Airport action", "Check gate early and move directly after immigration."], ["Personal reminder", "Best if issued on one ticket with checked-through baggage."]], segment: 0 },
-      { date: "Feb 5", from: "Barcelona (BCN)", to: "Amsterdam (AMS)", airline: "KLM", airlineClass: "klm", flight: "KL1510", dep: "06:00", arr: "08:20", tone: "blue", details: [["Role", "First sector from Barcelona to Amsterdam."], ["Connection note", "Connect onward to AMS-YYZ."], ["Airport action", "Early departure. Arrive at BCN airport with enough buffer."], ["Personal reminder", "Prepare transport to the airport the night before."]], segment: 1 },
-      { date: "Feb 5", from: "Amsterdam (AMS)", to: "Toronto (YYZ)", airline: "KLM", airlineClass: "klm", flight: "KL691", dep: "13:30", arr: "15:40", tone: "blue", details: [["Role", "Long-haul sector to Toronto."], ["Connection note", "AMS transfer window is comfortable."], ["Airport action", "Confirm non-Schengen gate and boarding time."], ["Personal reminder", "Use the layover for meal, restroom, and device charging."]], segment: 1 },
-      { date: "Feb 12", from: "Toronto (YYZ)", to: "Amsterdam (AMS)", airline: "KLM", airlineClass: "klm", flight: "KL692", dep: "17:55", arr: "07:05", plus: "+1 day", tone: "blue", details: [["Role", "Overnight return sector to Amsterdam."], ["Connection note", "Connect onward to AMS-TPE after arrival."], ["Airport action", "Check gate and transfer flow immediately after arrival."], ["Personal reminder", "Winter delay risk exists. Monitor flight status before departure."]], segment: 2 },
-      { date: "Feb 13", from: "Amsterdam (AMS)", to: "Taipei (TPE)", airline: "CHINA AIRLINES", airlineClass: "ci", flight: "CI74", dep: "10:40", arr: "06:35", plus: "+1 day", tone: "pink", details: [["Role", "Final long-haul return sector to Taipei."], ["Connection note", "Same-day AMS connection is feasible."], ["Airport action", "Proceed to the long-haul departure gate after transfer formalities."], ["Personal reminder", "Confirm baggage-through status to Taipei."]], segment: 2 }
+      { date: "Jan 31", from: "Taipei (TPE)", to: "Amsterdam (AMS)", airline: "China Airlines", flight: "CI73", dep: "23:05", arr: "07:50", plus: "+1 day", segment: 0, details: [["Role", "Long-haul outbound sector into Amsterdam."], ["Connection note", "Connect to AMS-BCN after arrival."], ["Airport action", "Follow transfer signs and prepare for Schengen immigration."], ["Personal reminder", "Keep passport, boarding pass, and essentials easily accessible."]] },
+      { date: "Feb 1", from: "Amsterdam (AMS)", to: "Barcelona (BCN)", airline: "KLM", flight: "KL1513", dep: "10:05", arr: "12:15", segment: 0, details: [["Role", "Final sector to Barcelona."], ["Connection note", "This follows the short AMS connection after CI73."], ["Airport action", "Check gate early and move directly after immigration."], ["Personal reminder", "Best if issued on one ticket with checked-through baggage."]] },
+      { date: "Feb 5", from: "Barcelona (BCN)", to: "Amsterdam (AMS)", airline: "KLM", flight: "KL1510", dep: "06:00", arr: "08:20", segment: 1, details: [["Role", "First sector from Barcelona to Amsterdam."], ["Connection note", "Connect onward to AMS-YYZ."], ["Airport action", "Early departure. Arrive at BCN airport with enough buffer."], ["Personal reminder", "Prepare transport to the airport the night before."]] },
+      { date: "Feb 5", from: "Amsterdam (AMS)", to: "Toronto (YYZ)", airline: "KLM", flight: "KL691", dep: "13:30", arr: "15:40", segment: 1, details: [["Role", "Long-haul sector to Toronto."], ["Connection note", "AMS transfer window is comfortable."], ["Airport action", "Confirm non-Schengen gate and boarding time."], ["Personal reminder", "Use the layover for meal, restroom, and device charging."]] },
+      { date: "Feb 12", from: "Toronto (YYZ)", to: "Amsterdam (AMS)", airline: "KLM", flight: "KL692", dep: "17:55", arr: "07:05", plus: "+1 day", segment: 2, details: [["Role", "Overnight return sector to Amsterdam."], ["Connection note", "Connect onward to AMS-TPE after arrival."], ["Airport action", "Check gate and transfer flow immediately after arrival."], ["Personal reminder", "Winter delay risk exists. Monitor flight status before departure."]] },
+      { date: "Feb 13", from: "Amsterdam (AMS)", to: "Taipei (TPE)", airline: "China Airlines", flight: "CI74", dep: "10:40", arr: "06:35", plus: "+1 day", segment: 2, details: [["Role", "Final long-haul return sector to Taipei."], ["Connection note", "Same-day AMS connection is feasible."], ["Airport action", "Proceed to the long-haul departure gate after transfer formalities."], ["Personal reminder", "Confirm baggage-through status to Taipei."]] }
+    ];
+
+    const tripSegments = [
+      { title: "Taipei to Barcelona", route: "TPE-AMS-BCN", copy: "Business trip outbound via Amsterdam.", legs: [0, 1] },
+      { title: "Barcelona to Toronto", route: "BCN-AMS-YYZ", copy: "Transfer to Toronto via Amsterdam.", legs: [2, 3] },
+      { title: "Toronto to Taipei", route: "YYZ-AMS-TPE", copy: "Return home via Amsterdam.", legs: [4, 5] }
+    ];
+
+    const focusBySegment = [
+      { risk: "Short AMS connection", action: "Confirm CI73 + KL1513 ticketing, checked-through baggage, and boarding passes before departure." },
+      { risk: "Comfortable AMS connection", action: "Arrange early transport to BCN airport and keep the morning departure buffer protected." },
+      { risk: "Same-day AMS connection", action: "Monitor YYZ winter departure status and confirm AMS gate and baggage-through information." }
     ];
 
     const cities = {
-      TPE: { name: "Taipei", code: "TPE", x: 83.77, y: 36.09, labelX: 6, labelY: 15 },
-      AMS: { name: "Amsterdam", code: "AMS", x: 51.32, y: 20.94, labelX: 18, labelY: -40 },
-      BCN: { name: "Barcelona", code: "BCN", x: 50.58, y: 27.06, labelX: -18, labelY: 18 },
+      TPE: { name: "Taipei", code: "TPE", x: 83.77, y: 36.09, labelX: 8, labelY: 15 },
+      AMS: { name: "Amsterdam", code: "AMS", x: 51.32, y: 20.94, labelX: 20, labelY: -34 },
+      BCN: { name: "Barcelona", code: "BCN", x: 50.58, y: 27.06, labelX: -22, labelY: 17 },
       YYZ: { name: "Toronto", code: "YYZ", x: 27.88, y: 25.73, labelX: -18, labelY: 14 }
     };
 
-    const tripSegments = [
-      { icon: "💼", title: "Business Trip · Taipei to Barcelona", route: "TPE-AMS-BCN", copy: "Business trip outbound via Amsterdam.", legs: [0, 1] },
-      { icon: "📍", title: "Family Visit · Barcelona to Toronto", route: "BCN-AMS-YYZ", copy: "Transfer to Toronto via Amsterdam.", legs: [2, 3] },
-      { icon: "↩", title: "Return Home · Toronto to Taipei", route: "YYZ-AMS-TPE", copy: "Return home via Amsterdam.", legs: [4, 5] }
-    ];
-
-    const statusBySegment = [
-      {
-        viewing: "TPE-AMS-BCN",
-        focus: "Short AMS connection",
-        reminder: "Confirm single ticket, checked-through baggage, and boarding passes before departure.",
-        nextAction: "Confirm CI73 + KL1513 ticketing and baggage-through status."
-      },
-      {
-        viewing: "BCN-AMS-YYZ",
-        focus: "Comfortable connection window",
-        reminder: "Morning departure from Barcelona. Prepare transport to BCN early.",
-        nextAction: "Arrange early transport to BCN airport."
-      },
-      {
-        viewing: "YYZ-AMS-TPE",
-        focus: "Same-day AMS connection",
-        reminder: "Check baggage-through status and AMS gate information after arrival.",
-        nextAction: "Monitor YYZ winter departure status and confirm AMS connection."
-      }
-    ];
-
-    let active = 0;
-    let expandedLegs = new Set([0, 1]);
+    let activeSegment = 0;
     let animationStart = performance.now();
     let activePathEls = [];
     let activePathLengths = [];
     let activeTotalPathLength = 0;
-    const timeline = document.querySelector("#timeline");
-    const markerLayer = document.querySelector("#markers");
-    const cardLayer = document.querySelector("#cards");
-    const dots = document.querySelector("#dots");
-    const plane = document.querySelector("#planeMover");
-    const routeSvg = document.querySelector(".routes-svg");
-    const globeStage = document.querySelector(".globe-stage");
-    const statusPanel = document.querySelector("#statusPanel");
+    const expandedLegs = new Set([0, 1]);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    function airportCode(label) {
-      return label.match(/\(([^)]+)\)/)[1];
-    }
+    const focusGrid = document.querySelector("#focusGrid");
+    const focusPhaseLabel = document.querySelector("#focusPhaseLabel");
+    const phaseList = document.querySelector("#phaseList");
+    const timeline = document.querySelector("#timeline");
+    const markerLayer = document.querySelector("#markers");
+    const routeSvg = document.querySelector(".routes-svg");
+    const mapCanvas = document.querySelector("#mapCanvas");
+    const plane = document.querySelector("#planeMover");
 
-    function mapPointToStage(xPercent, yPercent) {
-      const styles = getComputedStyle(globeStage);
-      const scale = parseFloat(styles.getPropertyValue("--map-scale")) || 1;
-      const offsetX = parseFloat(styles.getPropertyValue("--map-x")) || 0;
-      const offsetY = parseFloat(styles.getPropertyValue("--map-y")) || 0;
-      return {
-        x: offsetX + 50 + (xPercent - 50) * scale,
-        y: offsetY + 50 + (yPercent - 50) * scale
-      };
-    }
+    function airportCode(label) { return label.match(/\(([^)]+)\)/)[1]; }
+    function phaseStyle(index) { return `--phase-rgb: ${phaseColors[index]}`; }
 
-    function renderTimeline() {
-      const selectedSegment = legs[active].segment;
-      timeline.innerHTML = legs.map((leg, index) => `
-        <button class="leg segment-${leg.segment} ${leg.tone === "pink" ? "pink" : ""} ${leg.segment === selectedSegment ? "segment-selected" : "dimmed"} ${expandedLegs.has(index) ? "expanded" : ""} ${index === active ? "active" : ""}" type="button" data-index="${index}" aria-expanded="${expandedLegs.has(index)}" aria-label="Flight ${index + 1}: ${leg.from} to ${leg.to}, ${leg.airline} ${leg.flight}. ${expandedLegs.has(index) ? "Collapse details" : "Expand details"}">
-          <span class="orb">${index + 1}</span>
-          <span class="airline-icon">&#9992;</span>
-          <span>
-            <span class="date">${leg.date}</span>
-            <span class="route">${leg.from} &rarr; ${leg.to}</span>
-            <span class="meta">
-              <span class="airline ${leg.airlineClass}">${leg.airline}</span>
-              <span>${leg.flight}</span>
-              <span>Dep ${leg.dep}</span>
-              <span>|</span>
-              <span>Arr ${leg.arr}</span>
-              ${leg.plus ? `<span class="plus-day">(${leg.plus})</span>` : ""}
-            </span>
-          </span>
-          <span class="details">
-            ${leg.details.map(([label, value]) => `<span class="detail-row"><strong>${label}:</strong> ${value}</span>`).join("")}
-          </span>
-        </button>
-      `).join("");
-      timeline.querySelectorAll(".leg").forEach(button => {
-        button.addEventListener("click", () => toggleLeg(Number(button.dataset.index)));
-      });
-    }
-
-    function renderMarkers() {
-      const segmentCities = new Set();
-      tripSegments[legs[active].segment].legs.forEach(index => {
-        segmentCities.add(airportCode(legs[index].from));
-        segmentCities.add(airportCode(legs[index].to));
-      });
-      markerLayer.innerHTML = Object.values(cities).map(city => {
-        const onRoute = segmentCities.has(city.code);
-        const point = mapPointToStage(city.x, city.y);
-        return `
-          <span class="marker ${onRoute ? "active" : ""}" style="left:${point.x}%; top:${point.y}%"></span>
-          <span class="city-label" style="left:${point.x}%; top:${point.y}%; transform: translate(calc(-50% + ${city.labelX || 0}px), ${city.labelY ?? 16}px)">${city.name}<br>(${city.code})</span>
-        `;
-      }).join("");
-    }
-
-    function renderCards() {
-      const activeSegment = legs[active].segment;
-      cardLayer.innerHTML = tripSegments.map((card, index) => `
-        <article class="info-card segment-card-${index} ${index === activeSegment ? "active-segment" : "faded"}" tabindex="0" role="button" data-segment="${index}" aria-pressed="${index === activeSegment}" aria-label="View trip phase: ${card.title}, route ${card.route}">
-          <div>
-            <div class="card-icon">${card.icon}</div>
-            <div class="card-title">${card.title}</div>
-            <div class="card-title">${card.route}</div>
-            <div class="card-copy">${card.copy}</div>
-          </div>
-          <div class="check">&#10003;</div>
-        </article>
-      `).join("");
-      cardLayer.querySelectorAll(".info-card").forEach(card => {
-        card.addEventListener("click", () => setSegment(Number(card.dataset.segment)));
-        card.addEventListener("keydown", event => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            setSegment(Number(card.dataset.segment));
-          }
-        });
-      });
-      dots.innerHTML = tripSegments.map((_, index) => `<span class="dot ${index === activeSegment ? "active" : ""}"></span>`).join("");
-      const card = cardLayer.children[activeSegment];
-      if (card) card.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
-    }
-
-    function renderStatus() {
-      const activeSegment = legs[active].segment;
-      const status = statusBySegment[activeSegment];
-      statusPanel.innerHTML = `
-        <div class="status-item">
-          <span class="status-label">Viewing</span>
-          <span class="status-value">${status.viewing}</span>
-        </div>
-        <div class="status-item">
-          <span class="status-label">Focus</span>
-          <span class="status-value">${status.focus}</span>
-        </div>
-        <div class="status-item">
-          <span class="status-label">Reminder</span>
-          <span class="status-value">${status.reminder}</span>
-        </div>
-        <div class="status-item next-action">
-          <span class="status-label">Next Action</span>
-          <span class="status-value">${status.nextAction}</span>
-        </div>
+    function renderFocus() {
+      const segment = tripSegments[activeSegment];
+      const focus = focusBySegment[activeSegment];
+      focusPhaseLabel.textContent = segment.route;
+      focusGrid.innerHTML = `
+        <div class="focus-row"><div class="focus-key">Phase route</div><div class="focus-value">${segment.route}</div></div>
+        <div class="focus-row"><div class="focus-key">Connection risk</div><div class="focus-value">${focus.risk}</div></div>
+        <div class="focus-row"><div class="focus-key">Next action</div><div class="focus-value">${focus.action}</div></div>
       `;
     }
 
-    function renderRoutes() {
-      const segment = tripSegments[legs[active].segment];
-      const segmentLegs = new Set(segment.legs);
-      document.querySelectorAll(".flight-path").forEach((path, index) => {
-        path.classList.toggle("active", segmentLegs.has(index));
+    function renderPhases() {
+      phaseList.innerHTML = tripSegments.map((phase, index) => `
+        <button class="phase-card ${index === activeSegment ? "active" : ""}" style="${phaseStyle(index)}" type="button" data-segment="${index}" aria-pressed="${index === activeSegment}">
+          <span>
+            <span class="phase-title">${phase.title}</span>
+            <span class="phase-route">${phase.route}</span>
+            <span class="phase-copy">${phase.copy}</span>
+          </span>
+          <span class="phase-status">Active</span>
+        </button>
+      `).join("");
+      phaseList.querySelectorAll(".phase-card").forEach(button => button.addEventListener("click", () => setSegment(Number(button.dataset.segment))));
+    }
+
+    function renderTimeline() {
+      timeline.innerHTML = legs.map((leg, index) => {
+        const isExpanded = expandedLegs.has(index);
+        const selected = leg.segment === activeSegment;
+        return `
+          <button class="leg ${selected ? "segment-selected" : ""} ${isExpanded ? "expanded" : ""}" style="${phaseStyle(leg.segment)}" type="button" data-index="${index}" aria-expanded="${isExpanded}">
+            <span class="leg-num">${index + 1}</span>
+            <span>
+              <span class="leg-date">${leg.date}</span>
+              <span class="leg-route">${leg.from} &rarr; ${leg.to}</span>
+              <span class="leg-meta"><span>${leg.airline} ${leg.flight}</span><span>Dep ${leg.dep}</span><span>Arr ${leg.arr}${leg.plus ? ` (${leg.plus})` : ""}</span></span>
+            </span>
+            <span class="leg-toggle">${isExpanded ? "Hide" : "Details"}</span>
+            <span class="leg-details">
+              ${leg.details.map(([key, value]) => `<span class="detail-row"><strong>${key}:</strong> ${value}</span>`).join("")}
+            </span>
+          </button>
+        `;
+      }).join("");
+      timeline.querySelectorAll(".leg").forEach(button => button.addEventListener("click", () => {
+        const index = Number(button.dataset.index);
+        if (expandedLegs.has(index)) expandedLegs.delete(index); else expandedLegs.add(index);
+        renderTimeline();
+      }));
+    }
+
+    function renderMap() {
+      const activeLegs = new Set(tripSegments[activeSegment].legs);
+      document.querySelectorAll(".flight-path").forEach((path, index) => path.classList.toggle("segment-active", activeLegs.has(index)));
+      const citySet = new Set();
+      tripSegments[activeSegment].legs.forEach(index => {
+        citySet.add(airportCode(legs[index].from));
+        citySet.add(airportCode(legs[index].to));
       });
-      activePathEls = segment.legs.map(index => document.querySelector(`#path-${index}`));
+      markerLayer.innerHTML = Object.values(cities).map(city => `
+        <span class="marker ${citySet.has(city.code) ? "segment-active" : ""}" style="left:${city.x}%; top:${city.y}%; ${phaseStyle(activeSegment)}"></span>
+        <span class="city-label" style="left:${city.x}%; top:${city.y}%; transform: translate(calc(-50% + ${city.labelX}px), ${city.labelY}px)">${city.name}<br>(${city.code})</span>
+      `).join("");
+      activePathEls = tripSegments[activeSegment].legs.map(index => document.querySelector(`#path-${index}`));
       activePathLengths = activePathEls.map(path => path.getTotalLength());
       activeTotalPathLength = activePathLengths.reduce((sum, length) => sum + length, 0);
       animationStart = performance.now();
-      plane.style.color = legs[active].tone === "pink" ? "var(--pink)" : "white";
-      plane.style.filter = legs[active].tone === "pink" ? "drop-shadow(0 0 16px var(--pink))" : "drop-shadow(0 0 16px var(--blue))";
-      positionPlane(animationStart);
+      plane.style.cssText += `; ${phaseStyle(activeSegment)}`;
+      positionPlane(reduceMotion ? animationStart + 4300 : animationStart);
     }
 
     function positionPlane(now) {
       if (!activePathEls.length || !activeTotalPathLength) return;
-      const duration = 8600;
-      const progress = ((now - animationStart) % duration) / duration;
+      const duration = 12000;
+      const progress = reduceMotion ? .5 : ((now - animationStart) % duration) / duration;
       let remainingDistance = activeTotalPathLength * progress;
       let path = activePathEls[0];
       let pathLength = activePathLengths[0];
@@ -1242,17 +734,15 @@
         if (remainingDistance <= pathLength || i === activePathEls.length - 1) break;
         remainingDistance -= pathLength;
       }
-      const localDistance = Math.min(pathLength, Math.max(0, remainingDistance));
-      const point = path.getPointAtLength(localDistance);
-      const next = path.getPointAtLength(Math.min(pathLength, localDistance + 2));
+      const distance = Math.min(pathLength, Math.max(0, remainingDistance));
+      const point = path.getPointAtLength(distance);
+      const next = path.getPointAtLength(Math.min(pathLength, distance + 2));
       const svgRect = routeSvg.getBoundingClientRect();
-      const stageRect = globeStage.getBoundingClientRect();
-      const x = (point.x / 1000) * svgRect.width + svgRect.left - stageRect.left;
-      const y = (point.y / 620) * svgRect.height + svgRect.top - stageRect.top;
-      const dx = next.x - point.x;
-      const dy = next.y - point.y;
-      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-      plane.style.transform = `translate(${x - 16}px, ${y - 16}px) rotate(${angle}deg)`;
+      const canvasRect = mapCanvas.getBoundingClientRect();
+      const x = (point.x / 1000) * svgRect.width + svgRect.left - canvasRect.left;
+      const y = (point.y / 620) * svgRect.height + svgRect.top - canvasRect.top;
+      const angle = Math.atan2(next.y - point.y, next.x - point.x) * 180 / Math.PI;
+      plane.style.transform = `translate(${x - 13}px, ${y - 13}px) rotate(${angle}deg)`;
     }
 
     function animatePlane(now) {
@@ -1260,60 +750,22 @@
       requestAnimationFrame(animatePlane);
     }
 
-    function setActive(index) {
-      active = (index + legs.length) % legs.length;
+    function setSegment(index) {
+      activeSegment = (index + tripSegments.length) % tripSegments.length;
+      renderFocus();
+      renderPhases();
       renderTimeline();
-      renderMarkers();
-      renderCards();
-      renderStatus();
-      renderRoutes();
+      renderMap();
     }
 
-    function toggleLeg(index) {
-      const nextSegment = legs[index].segment;
-      if (nextSegment !== legs[active].segment) {
-        active = index;
-        expandedLegs = new Set([index]);
-      } else if (expandedLegs.has(index)) {
-        expandedLegs.delete(index);
-      } else {
-        expandedLegs.add(index);
-      }
-      renderTimeline();
-      renderMarkers();
-      renderCards();
-      renderStatus();
-      renderRoutes();
-    }
-
-    function setSegment(segmentIndex) {
-      const segment = tripSegments[(segmentIndex + tripSegments.length) % tripSegments.length];
-      active = segment.legs[0];
-      expandedLegs = new Set(segment.legs);
-      renderTimeline();
-      renderMarkers();
-      renderCards();
-      renderStatus();
-      renderRoutes();
-    }
-
-    document.querySelector("#prev").addEventListener("click", () => setSegment(legs[active].segment - 1));
-    document.querySelector("#next").addEventListener("click", () => setSegment(legs[active].segment + 1));
     window.addEventListener("keydown", event => {
-      if (event.key === "ArrowLeft") setSegment(legs[active].segment - 1);
-      if (event.key === "ArrowRight") setSegment(legs[active].segment + 1);
+      if (event.key === "ArrowLeft") setSegment(activeSegment - 1);
+      if (event.key === "ArrowRight") setSegment(activeSegment + 1);
     });
+    window.addEventListener("resize", () => positionPlane(reduceMotion ? animationStart + 4300 : performance.now()));
 
-    setActive(0);
+    setSegment(0);
     if (!reduceMotion) requestAnimationFrame(animatePlane);
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
