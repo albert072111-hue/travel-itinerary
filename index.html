@@ -318,12 +318,30 @@
       mask-image: radial-gradient(ellipse at center, black 0 58%, transparent 73%);
     }
 
+    .world-map {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      opacity: .5;
+      filter: drop-shadow(0 0 10px rgba(102, 188, 255, .28));
+      pointer-events: none;
+    }
+
+    .land {
+      fill: rgba(168, 205, 226, .22);
+      stroke: rgba(203, 230, 255, .2);
+      stroke-width: 1.4;
+    }
+
     .routes-svg {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       overflow: visible;
+      z-index: 2;
     }
 
     .flight-path {
@@ -607,9 +625,10 @@
 
       .route-line {
         margin-top: 10px;
-        font-size: .96rem;
-        line-height: 1.5;
-        letter-spacing: .07em;
+        font-size: .78rem;
+        line-height: 1.25;
+        letter-spacing: .035em;
+        white-space: nowrap;
       }
 
       .timeline-shell {
@@ -660,7 +679,7 @@
         padding: 0;
       }
       .info-card {
-        min-height: 72px;
+        min-height: 88px;
         grid-template-columns: 1fr 28px;
         justify-items: start;
         align-items: center;
@@ -671,7 +690,7 @@
       .info-card > div:first-child {
         display: grid;
         grid-template-columns: 36px 1fr;
-        grid-template-rows: auto auto;
+        grid-template-rows: auto auto auto;
         column-gap: 9px;
         align-items: center;
         width: 100%;
@@ -690,7 +709,14 @@
         line-height: 1.12;
       }
       .card-copy {
-        display: none;
+        display: -webkit-box;
+        margin-top: 4px;
+        font-size: .72rem;
+        line-height: 1.25;
+        color: rgba(210, 226, 245, .74);
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
       }
       .check {
         margin-top: 0;
@@ -701,6 +727,9 @@
       .globe-stage {
         min-height: 330px;
         border-radius: 15px;
+      }
+      .world-map {
+        opacity: .58;
       }
       .earth { left: -36%; right: -34%; height: 510px; min-height: 390px; }
       .city-label {
@@ -732,6 +761,14 @@
 
     <section class="globe-stage" aria-label="Interactive route map">
       <div class="earth"></div>
+      <svg class="world-map" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+        <path class="land" d="M80 248 C105 205 154 182 205 190 C247 197 284 219 315 250 C294 264 275 284 260 314 C245 347 221 366 185 370 C149 374 115 355 92 326 C70 299 60 275 80 248 Z" />
+        <path class="land" d="M208 374 C248 366 292 383 314 421 C338 462 323 514 279 538 C240 560 198 543 184 505 C172 471 188 429 208 374 Z" />
+        <path class="land" d="M420 244 C447 207 500 192 548 209 C594 225 615 260 606 300 C596 343 560 365 523 356 C489 348 472 329 446 329 C418 328 398 306 404 279 C406 265 412 254 420 244 Z" />
+        <path class="land" d="M500 357 C535 352 568 377 579 418 C590 461 570 507 532 522 C499 535 467 511 461 471 C456 435 472 389 500 357 Z" />
+        <path class="land" d="M585 230 C632 194 702 186 762 206 C824 227 870 267 889 315 C856 324 817 315 783 297 C744 276 711 279 677 303 C646 324 605 319 585 292 C569 269 566 247 585 230 Z" />
+        <path class="land" d="M748 358 C785 350 832 370 859 407 C887 445 879 489 846 506 C812 523 773 507 756 470 C741 438 729 386 748 358 Z" />
+      </svg>
       <svg class="routes-svg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="pinkBlue" x1="0" x2="1">
